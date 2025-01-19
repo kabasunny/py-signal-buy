@@ -6,7 +6,7 @@ from typing import List
 from models.ModelFactory import ModelFactory
 from decorators.ArgsChecker import ArgsChecker
 
-class ModelPipeline:
+class ModelTrainStage:
     @ArgsChecker((None, DataManager, ModelSaverLoader, List[str]), None)
     def __init__(
         self,

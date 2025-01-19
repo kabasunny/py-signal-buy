@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from models.ModelSaverLoader import ModelSaverLoader
 from data.DataManager import DataManager
@@ -6,13 +6,16 @@ from proto_conversion.ProtoSaverLoader import ProtoSaverLoader
 from symbols import get_train_and_real_data_symbols  # 別ファイルで定義
 from model_types import model_types  # 別ファイルで定義
 
-from TrainAutomatedPipeline import TrainAutomatedPipeline  # 過酷なトレーニングを専門とする
+from ModelTrainingPipeline import ModelTrainingPipeline  # 過酷なトレーニングを専門とする
 from RealDataAutomatedPipeline import RealDataAutomatedPipeline  # 実践シミュレーション用protofileを取り揃える
 
 def main():
     current_date_str = datetime.now().strftime("%Y-%m-%d")
 
-    before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間
+    before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間# 現在の日付から2年前の日付を計算
+    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 
+    # training_date_ago = trained_date_ago + 365 * 10 # トレーニング開始日（10年間の期間） 
+    split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime("%Y-%m-%d")
 
     model_saver_loader = ModelSaverLoader(
         current_date_str, model_save_path="models/trained_models", model_file_ext="pkl"
@@ -48,8 +51,9 @@ def main():
         "SelectAll",
     ]
 
-    train_pipeline = TrainAutomatedPipeline(
+    train_pipeline = ModelTrainingPipeline(
         before_period_days,
+        split_date,
         model_types,
         feature_list_str,
         model_saver_loader,

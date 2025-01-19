@@ -3,7 +3,6 @@ from decorators.ArgsChecker import ArgsChecker
 from data.DataManager import DataManager
 from sklearn.model_selection import train_test_split
 
-
 class DataForModelPreparation:
     @staticmethod
     @ArgsChecker((DataManager, DataManager, str), pd.DataFrame)  # 型チェックを追加
@@ -17,7 +16,6 @@ class DataForModelPreparation:
 
         # データを結合する
         full_data = feature_data.merge(label_data, on=["date", "symbol"], how="left")
-        # full_data = full_data.merge(feature_data, on=["date", "symbol"], how="left")
 
         return full_data
 
@@ -41,20 +39,9 @@ class DataForModelPreparation:
         correct_data_practical_test = correct_data.drop(correct_data_train_eval.index)
 
         # 不正解データをランダムに分割
-        # CASE1:正解と同じ数
-        # incorrect_data_train_eval = incorrect_data.sample(
-        #     n=correct_data_train_eval.shape[0], random_state=42
-        # )
-        # CASE2:全数の半分の数
         incorrect_data_train_eval = incorrect_data.sample(frac=0.5, random_state=42)
+        incorrect_data_practical_test = incorrect_data.drop(incorrect_data_train_eval.index)
 
-        incorrect_data_practical_test = incorrect_data.drop(
-            incorrect_data_train_eval.index
-        )
-        # print(f"correct_data_train_eval:{len(correct_data_train_eval)}")
-        # print(f"correct_data_practical_test:{len(correct_data_practical_test)}")
-        # print(f"incorrect_data_train_eval:{len(incorrect_data_train_eval)}")
-        # print(f"incorrect_data_practical_test:{len(incorrect_data_practical_test)}")
         return (
             correct_data_train_eval,
             correct_data_practical_test,
@@ -63,9 +50,9 @@ class DataForModelPreparation:
         )
 
     @staticmethod
-    @ArgsChecker((pd.DataFrame, pd.DataFrame), pd.DataFrame)
+    @ArgsChecker((pd.DataFrame, pd.DataFrame, float), pd.DataFrame)
     def prepare_training_and_test_data(
-        correct_data_train_eval, incorrect_data_train_eval
+        correct_data_train_eval, incorrect_data_train_eval, test_size=0.2
     ):
         # 訓練データとテストデータに分割
         combined_train_eval_data = pd.concat(
@@ -78,7 +65,7 @@ class DataForModelPreparation:
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
-            test_size=0.2,
+            test_size=test_size,
             shuffle=True,
             random_state=42,
         )

@@ -5,16 +5,13 @@ from labeling.LabelCreationStage import LabelCreatePipeline
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
-from data.DataForModelPipeline import DataForModelPipeline
 from features.AnalyzerFactory import AnalyzerFactory
 from selector.SelectorFactory import SelectorFactory
-from models.ModelPipeline import ModelPipeline
-from models.ModelPredictPipeline import ModelPredictPipeline
 import time
 
 
 
-class TrainAutomatedPipeline:
+class DataPreparationPipline:
     def __init__(
         self,
         before_period_days,  # 特徴量生成に必要な日数
@@ -60,24 +57,6 @@ class TrainAutomatedPipeline:
             self.data_managers["selected_ft_with_label"],
             SelectorFactory.create_selectors(self.selectors), 
         )
-        self.data_for_model_pipeline = DataForModelPipeline(
-            self.data_managers["labeled"],
-            self.data_managers["selected_feature"],
-            self.data_managers["training_and_test"],
-            self.data_managers["practical"],
-        )
-        self.model_pipeline = ModelPipeline(
-            self.data_managers["training_and_test"],
-            self.model_saver_loader,
-            self.model_types,
-        )
-        self.model_predict_pipeline = ModelPredictPipeline(
-            self.model_saver_loader,
-            self.data_managers["training_and_test"],
-            self.data_managers["practical"],
-            self.data_managers["predictions"],
-            self.model_types,
-        )
 
     def process_symbol(self, symbol):
         print(f"Symbol of current data: {symbol}")
@@ -89,9 +68,6 @@ class TrainAutomatedPipeline:
                 ("LabelCreatePipeline", self.label_create_pipeline),
                 ("FeaturePipeline", self.feature_pipeline),
                 ("SelectorPipeline", self.selector_pipeline),
-                ("DataForModelPipeline", self.data_for_model_pipeline),
-                ("ModelPipeline", self.model_pipeline),
-                ("ModelPredictPipeline", self.model_predict_pipeline),
             ]
 
             for pipeline_name, pipeline in pipelines:
