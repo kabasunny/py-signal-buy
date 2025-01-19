@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.linear_model import Lasso
-from selectores.SupervisedFeatureSelectorABC import SupervisedFeatureSelectorABC
+from selector.SupervisedFeatureSelectorABC import SupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
 

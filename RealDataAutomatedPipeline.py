@@ -4,10 +4,10 @@ from preprocessing.DataPreprocessingStage import DataPreprocessingStage
 from labeling.LabelCreationStage import LabelCreatePipeline
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
-from selectores.SelectorPipeline import SelectorPipeline
+from selector.FeatureSelectionStage import FeatureSelectionStage
 from proto_conversion.ProtoConvertPipeline import ProtoConvertPipeline
 from features.AnalyzerFactory import AnalyzerFactory
-from selectores.SelectorFactory import SelectorFactory
+from selector.SelectorFactory import SelectorFactory
 from for_real.ForRealPredictPipeline import ForRealPredictPipeline
 import time
 from proto_conversion.print_ml_stock_response import print_ml_stock_response_summary
@@ -55,7 +55,7 @@ class RealDataAutomatedPipeline:
             self.before_period_days,
             AnalyzerFactory.create_analyzers(self.feature_list_str),
         )
-        self.selector_pipeline = SelectorPipeline(
+        self.selector_pipeline = FeatureSelectionStage(
             self.data_managers["labeled"],
             self.data_managers["normalized_feature"],
             self.data_managers["selected_feature"],

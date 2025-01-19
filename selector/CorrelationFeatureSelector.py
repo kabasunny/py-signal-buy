@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from selectores.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
+from selector.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
 

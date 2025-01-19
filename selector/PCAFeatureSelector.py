@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.decomposition import PCA
-from selectores.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
+from selector.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
 

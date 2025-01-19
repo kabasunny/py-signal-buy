@@ -1,5 +1,5 @@
 import pandas as pd
-from selectores.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
+from selector.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
 

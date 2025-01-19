@@ -1,9 +1,9 @@
 import pandas as pd
-from selectores.SupervisedFeatureSelectorABC import SupervisedFeatureSelectorABC
+from selector.SupervisedFeatureSelectorABC import SupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 from data.DataManager import DataManager
 
-class SelectorPipeline:
+class FeatureSelectionStage:
     @ArgsChecker((None, DataManager, DataManager, DataManager, DataManager, list), None)
     def __init__(
         self,

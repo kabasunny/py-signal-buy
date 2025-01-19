@@ -1,8 +1,8 @@
 import pandas as pd
-from selectores.PCAFeatureSelector import PCAFeatureSelector
-from selectores.CorrelationFeatureSelector import CorrelationFeatureSelector
-from selectores.LassoFeatureSelector import LassoFeatureSelector
-from selectores.TreeFeatureSelector import TreeFeatureSelector
+from selector.PCAFeatureSelector import PCAFeatureSelector
+from selector.CorrelationFeatureSelector import CorrelationFeatureSelector
+from selector.LassoFeatureSelector import LassoFeatureSelector
+from selector.TreeFeatureSelector import TreeFeatureSelector
 from decorators.ArgsChecker import ArgsChecker
 
 
