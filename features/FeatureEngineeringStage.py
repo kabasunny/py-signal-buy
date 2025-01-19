@@ -2,10 +2,9 @@ import pandas as pd
 from preprocessing.Normalizer import Normalizer  # Normalizerクラスをインポート
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 from data.DataManager import DataManager
-from features.PastDataFeatureCreator import PastDataFeatureCreator
 
 
-class FeaturePipeline:
+class FeatureEngineeringStage:
     @ArgsChecker((None, DataManager, DataManager, int, list), None)
     def __init__(
         self,

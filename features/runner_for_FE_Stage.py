@@ -1,4 +1,3 @@
-# opti-ml-py\preprocessing\runner.py
 import sys
 import os
 
@@ -8,8 +7,9 @@ project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from preprocessing.DataPreprocessingStage import DataPreprocessingStage
+from features.FeatureEngineeringStage import FeatureEngineeringStage
 from data.DataManager import DataManager
+from AnalyzerFactory import AnalyzerFactory
 from datetime import datetime
 
 if __name__ == "__main__":
@@ -20,13 +20,22 @@ if __name__ == "__main__":
     symbol = "1570"
 
     data_manager_names = [
-        "formated_raw",
         "processed_raw",
+        "normalized_feature",
     ]
 
     data_managers = {}
     for d_m_name in data_manager_names:
         data_managers[d_m_name] = DataManager(current_date_str, base_data_path, d_m_name, file_ext)
+   
+    # feature_list_str = ["peak_trough", "fourier", "volume", "price"]  # ノーマライズ時のエラーを回避済み
+    
+    feature_list_str = ["peak_trough", "fourier", "volume", "price", "past"]
 
-    # PreprocessPipeline のインスタンスを作成し、引数としてデータマネージャを渡す
-    DataPreprocessingStage(data_managers["formated_raw"], data_managers["processed_raw"]).run(f"{symbol}")
+    # FeaturePipeline のインスタンスを作成し、実行
+    FeatureEngineeringStage(
+            data_managers["processed_raw"],
+            data_managers["normalized_feature"],
+            before_period_days,
+            AnalyzerFactory.create_analyzers(feature_list_str),
+        ).run(f"{symbol}")

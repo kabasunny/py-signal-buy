@@ -1,9 +1,9 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreatePipeline import LabelCreatePipeline
+from labeling.LabelCreationStage import LabelCreatePipeline
 from labeling.TroughLabelCreator import TroughLabelCreator
-from features.FeaturePipeline import FeaturePipeline
+from features.FeatureEngineeringStage import FeatureEngineeringStage
 from selectores.SelectorPipeline import SelectorPipeline
 from proto_conversion.ProtoConvertPipeline import ProtoConvertPipeline
 from features.AnalyzerFactory import AnalyzerFactory
@@ -49,7 +49,7 @@ class RealDataAutomatedPipeline:
             self.before_period_days,
             TroughLabelCreator(),
         )
-        self.feature_pipeline = FeaturePipeline(
+        self.feature_pipeline = FeatureEngineeringStage(
             self.data_managers["processed_raw"],
             self.data_managers["normalized_feature"],
             self.before_period_days,

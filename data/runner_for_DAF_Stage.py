@@ -18,11 +18,12 @@ from datetime import datetime
 if __name__ == "__main__":
     current_date_str = datetime.now().strftime("%Y-%m-%d")
     before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間
-    base_data_path = "data/stock_data"
+    base_data_path = "data/stock_data/demo"
     file_ext = "csv"  # "parquet"
+    symbol = "1570"
 
-    data_manager = DataManager(current_date_str, base_data_path, "demo", file_ext
+    data_manager = DataManager(current_date_str, base_data_path, "formated_raw", file_ext
     )  # RawDataManager クラスのインスタンスを作成
 
     # DataPipeline クラスのインスタンスを作成し、データパイプラインを実行
-    DataAcquisitionAndFormattingStage(data_manager,YahooFinanceStockDataFetcher()).run("1570")
+    DataAcquisitionAndFormattingStage(data_manager,YahooFinanceStockDataFetcher()).run(f"{symbol}")
