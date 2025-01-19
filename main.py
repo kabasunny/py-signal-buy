@@ -2,18 +2,18 @@ from datetime import datetime, timedelta
 
 from models.ModelSaverLoader import ModelSaverLoader
 from data.DataManager import DataManager
-from proto_conversion.ProtoSaverLoader import ProtoSaverLoader
-from symbols import get_train_and_real_data_symbols  # 別ファイルで定義
+from result.ProtoSaverLoader import ProtoSaverLoader
+from symbols import symbols  # 別ファイルで定義
 from model_types import model_types  # 別ファイルで定義
-
+from DataPreparationPipline import DataPreparationPipline
 from ModelTrainingPipeline import ModelTrainingPipeline  # 過酷なトレーニングを専門とする
-from RealDataAutomatedPipeline import RealDataAutomatedPipeline  # 実践シミュレーション用protofileを取り揃える
+from ModelPredictionPipeline import ModelPredictionPipeline  # 実践シミュレーション用protofileを取り揃える
 
 def main():
     current_date_str = datetime.now().strftime("%Y-%m-%d")
 
     before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間# 現在の日付から2年前の日付を計算
-    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 
+    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 翌日以降実践
     # training_date_ago = trained_date_ago + 365 * 10 # トレーニング開始日（10年間の期間） 
     split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime("%Y-%m-%d")
 
@@ -36,7 +36,6 @@ def main():
         "training_and_test",
         "practical",
         "predictions",
-        "real_predictions",
     ]
 
     data_managers = {}
@@ -51,22 +50,32 @@ def main():
         "SelectAll",
     ]
 
-    train_pipeline = ModelTrainingPipeline(
-        before_period_days,
-        split_date,
+    data_preparation = DataPreparationPipline(
+        before_period_days,  # 特徴量生成に必要な日数
         model_types,
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors,
+        selectors  # 新しい引数を追加
+    )
+
+    training_pipeline = ModelTrainingPipeline(
+        before_period_days,  # 特徴量生成に必要な日数
+        split_date, # トレーニング最終日、翌日以降実践日
+        model_types,
+        feature_list_str,
+        model_saver_loader,
+        data_managers,
+        selectors  # 新しい引数を追加
     )
 
     # ProtoSaverLoaderの初期化
     proto_file_path = "../go-optimal-stop/data/ml_stock_response/latest_response.bin"
     proto_saver_loader = ProtoSaverLoader(proto_file_path)
 
-    real_data_pipeline = RealDataAutomatedPipeline(
-        before_period_days,
+    prediction_pipeline = ModelPredictionPipeline(
+        before_period_days,  # 特徴量生成に必要な日数
+        split_date,
         model_types,
         feature_list_str,
         model_saver_loader,
@@ -76,23 +85,16 @@ def main():
     )
 
     # トレーニングと実データ用シンボルを取得
-    train_symbols, real_data_symbols = get_train_and_real_data_symbols(train_ratio=0.9)
-    r_d_symbols_copy = real_data_symbols.copy()
-    print(f"train_symbols : {train_symbols}")
-    print(f"real_data_symbols : {real_data_symbols}")
+    symbols_copy = symbols.copy()
 
-    # トレーニングを行う
-    while train_symbols:
-        train_symbol = train_symbols.pop(0)
-        train_pipeline.process_symbol(train_symbol)
-
-    # 予測結果を作成
-    while real_data_symbols:
-        real_data_symbol = real_data_symbols.pop(0)
-        real_data_pipeline.process_symbol(real_data_symbol)
+    while symbols_copy:
+        symbol = symbols_copy.pop(0)
+        data_preparation.process_symbol(symbol)
+        training_pipeline.process_symbol(symbol)
+        prediction_pipeline.process_symbol(symbol)
     
     # シミュレーション用データ形式に変換
-    real_data_pipeline.finish_prosess(r_d_symbols_copy)
+    prediction_pipeline.finish_prosess(symbols)
 
 if __name__ == "__main__":
     main()

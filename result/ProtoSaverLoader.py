@@ -1,7 +1,7 @@
 
-from proto_conversion.ml_stock_service_pb2 import MLStockResponse
+from result.ml_stock_service_pb2 import MLStockResponse
 
-from proto_conversion.print_ml_stock_response import print_ml_stock_response_summary
+from result.print_ml_stock_response import print_ml_stock_response_summary
 
 class ProtoSaverLoader:
     def __init__(self, file_path):

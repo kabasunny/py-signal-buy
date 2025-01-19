@@ -14,12 +14,13 @@ from data.DataForModelStage import DataForModelStage
 if __name__ == "__main__":
     current_date_str = datetime.now().strftime("%Y-%m-%d")
     before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間
+    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 翌日以降実践
     base_data_path = "data/stock_data/demo"
     file_ext = "csv"  # "parquet"
     symbol = "1570"
 
     # 現在の日付から2年前の日付を計算
-    split_date = (datetime.now() - timedelta(days=before_period_days)).strftime("%Y-%m-%d")
+    split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime("%Y-%m-%d")
 
     data_manager_names = [
         "selected_ft_with_label",

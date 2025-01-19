@@ -4,7 +4,7 @@ from models.ModelPredictor import ModelPredictor
 from typing import List
 
 
-class ForRealPredictPipeline:
+class PredictionStage:
     def __init__(
         self,
         model_saver_loader: ModelSaverLoader,

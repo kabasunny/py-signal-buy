@@ -1,5 +1,6 @@
 import sys
 import os
+from datetime import datetime, timedelta
 
 # プロジェクトのルートディレクトリを sys.path に追加
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -7,34 +8,48 @@ project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from proto_conversion.print_ml_stock_response import print_ml_stock_response_summary
+from result.print_ml_stock_response import print_ml_stock_response_summary
 from data.DataManager import DataManager
 from datetime import datetime
-from proto_conversion.ProtoConvertPipeline import ProtoConvertPipeline
-from proto_conversion.ProtoSaverLoader import ProtoSaverLoader
-from symbols import symbols  # 別ファイルで定義
+from result.ResultSavingStage import ResultSavingStage
+from result.ProtoSaverLoader import ProtoSaverLoader
+# from symbols import symbols  # 別ファイルで定義
 from model_types import model_types  # 別ファイルで定義
 
 if __name__ == "__main__":
     current_date_str = datetime.now().strftime("%Y-%m-%d")
-    base_data_path = "data/stock_data"
+    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 翌日以降実践
+    base_data_path = "data/stock_data/demo"
     file_ext = "csv"  # "parquet"
 
-    raw_data_manager = DataManager(
-        current_date_str, base_data_path, "formated_raw", file_ext
-    )
-    real_pred_data_manager = DataManager(
-        current_date_str, base_data_path, "real_predictions", file_ext
-    )
-    file_path = "../go-optimal-stop/data/ml_stock_response/latest_response.bin"
+    # 現在の日付から2年前の日付を計算
+    split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime("%Y-%m-%d")
+
+     # データマネージャのインスタンスを作成
+    data_manager_names = [
+        "formated_raw",
+        "predictions",
+    ]
+    data_managers = {}
+    for d_m_name in data_manager_names:
+        data_managers[d_m_name] = DataManager(current_date_str, base_data_path, d_m_name, file_ext)
+
+
+    file_path = "../go-optimal-stop/data/ml_stock_response/demo/latest_response.bin"
 
     # ProtoSaverLoaderの初期化
     proto_saver_loader = ProtoSaverLoader(file_path)
 
-    # symbols = ["7201", "7203",]
+    symbols = ["1570",] # ここはリストで渡す
 
     # ProtoConvertPipelineの初期化と実行
-    ProtoConvertPipeline(raw_data_manager, real_pred_data_manager, proto_saver_loader, model_types).run(symbols) # リストを受けるため他のパイプラインと異なる
+    ResultSavingStage(
+        data_managers["formated_raw"],
+        data_managers["predictions"],
+        proto_saver_loader,
+        model_types,
+        split_date,
+        ).run(symbols) # リストを受けるため他のパイプラインと異なる
     print("Proto conversion and saving completed.")
 
 

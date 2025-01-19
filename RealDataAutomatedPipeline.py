@@ -5,12 +5,12 @@ from labeling.LabelCreationStage import LabelCreatePipeline
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
-from proto_conversion.ProtoConvertPipeline import ProtoConvertPipeline
+from result.ResultSavingStage import ResultSavingStage
 from features.AnalyzerFactory import AnalyzerFactory
 from selector.SelectorFactory import SelectorFactory
-from for_real.ForRealPredictPipeline import ForRealPredictPipeline
+from prediction.PredictionStage import PredictionStage
 import time
-from proto_conversion.print_ml_stock_response import print_ml_stock_response_summary
+from result.print_ml_stock_response import print_ml_stock_response_summary
 
 
 
@@ -62,7 +62,7 @@ class RealDataAutomatedPipeline:
             self.data_managers["selected_ft_with_label"],
             SelectorFactory.create_selectors(self.selectors),
         )
-        self.real_predict_pipeline = ForRealPredictPipeline(
+        self.real_predict_pipeline = PredictionStage(
             self.model_saver_loader,
             data_managers["selected_ft_with_label"],
             data_managers["real_predictions"],
@@ -70,7 +70,7 @@ class RealDataAutomatedPipeline:
         )
 
         # ProtoConvertPipelineの初期化と実行
-        self.proto_convert_pipeline = ProtoConvertPipeline(
+        self.proto_convert_pipeline = ResultSavingStage(
             self.data_managers["formated_raw"],
             self.data_managers["real_predictions"],
             self.proto_saver_loader, 

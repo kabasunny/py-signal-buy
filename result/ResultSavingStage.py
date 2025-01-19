@@ -1,22 +1,39 @@
-from proto_conversion.ml_stock_service_pb2 import (
+from result.ml_stock_service_pb2 import (
     MLStockResponse,
     MLSymbolData,
     MLDailyData,
     ModelPredictions,
 )
+import pandas as pd
+from typing import List
+from data.DataManager import DataManager
+from result.ProtoSaverLoader import ProtoSaverLoader
 
-class ProtoConvertPipeline:
-    def __init__(self, raw_data_manager, real_pred_data_manager, proto_saver_loader, model_types):
+
+class ResultSavingStage:
+    def __init__(
+            self, 
+            raw_data_manager: DataManager, 
+            real_pred_data_manager: DataManager, 
+            proto_saver_loader: ProtoSaverLoader, 
+            model_types: List[str], 
+            split_date: str
+            ):
         self.raw_data_manager = raw_data_manager
         self.real_pred_data_manager = real_pred_data_manager
         self.proto_saver_loader = proto_saver_loader
         self.model_types = model_types
+        self.split_date = split_date  # 文字列のまま保存
 
-    def run(self, symbols): # リストを受けるため他のパイプラインと異なる
+    def run(self, symbols: List[str]):  # リストを受けるため他のパイプラインと異なる
         responses = []
         for symbol in symbols:
             # raw_data_manager からデータを読み込む
             raw_data_df = self.raw_data_manager.load_data(symbol)
+
+            # split_date の翌日以降のデータに絞り込む
+            raw_data_df = raw_data_df[raw_data_df['date'] > self.split_date]
+
             daily_data_list = [
                 MLDailyData(
                     date=str(row["date"]),
@@ -31,6 +48,10 @@ class ProtoConvertPipeline:
 
             # predictions_data_manager からデータを読み込む
             predictions_df = self.real_pred_data_manager.load_data(symbol)
+
+            # split_date の翌日以降のデータに絞り込む
+            predictions_df = predictions_df[predictions_df['date'] > self.split_date]
+            
             signal_dates = predictions_df[predictions_df["label"] == 1]["date"].tolist()
 
             model_predictions = {}

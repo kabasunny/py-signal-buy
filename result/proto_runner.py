@@ -7,7 +7,7 @@ project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from proto_conversion import (
+from result import (
     convert_to_proto_response,
     save_proto_response_to_file,
     load_proto_response_from_file,

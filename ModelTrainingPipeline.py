@@ -1,7 +1,6 @@
 
 from data.DataForModelStage import DataForModelStage
 from models.ModelTrainStage import ModelTrainStage
-from models.ModelPredictPipeline import ModelPredictPipeline
 import time
 
 class ModelTrainingPipeline:
