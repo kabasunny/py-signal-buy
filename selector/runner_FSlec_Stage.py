@@ -23,28 +23,32 @@ if __name__ == "__main__":
     data_manager_names = [
         "labeled",
         "normalized_feature",
-        "selected_feature",
+        "extracted_ft_with_label",
         "selected_ft_with_label",
     ]
 
     data_managers = {}
     for d_m_name in data_manager_names:
-        data_managers[d_m_name] = DataManager(current_date_str, base_data_path, d_m_name, file_ext)
+        data_managers[d_m_name] = DataManager(
+            current_date_str, base_data_path, d_m_name, file_ext
+        )
 
+    # 特徴量選択器のリストを定義
     selectors = [
-        "Tree",
-        "Lasso",
-        "Correlation",
-        "PCA",
-        "SelectAll",
+        "Tree",  # 決定木に基づく特徴量選択
+        "Lasso",  # Lasso回帰による特徴量選択
+        "Correlation",  # 相関に基づく特徴量選択
+        "MutualInformation",  # 相互情報量に基づく特徴量選択
+        "RFE",  # 再帰的特徴量削減
+        "VarianceThreshold",  # 分散閾値に基づく特徴量選択
+        # "SelectAll",  # 全特徴量を選択
     ]
-   
-    # SelectorPipeline のインスタンスを作成し、実行
-    FeatureSelectionStage(
-            data_managers["labeled"],
-            data_managers["normalized_feature"],
-            data_managers["selected_feature"],
-            data_managers["selected_ft_with_label"],
-            SelectorFactory.create_selectors(selectors),
-        ).run(f"{symbol}")
 
+    # FeatureSelectionStage のインスタンスを作成し、実行
+    FeatureSelectionStage(
+        data_managers["labeled"],
+        data_managers["normalized_feature"],
+        data_managers["extracted_ft_with_label"],
+        data_managers["selected_ft_with_label"],
+        SelectorFactory.create_selectors(selectors),
+    ).run(f"{symbol}")
