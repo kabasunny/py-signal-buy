@@ -33,4 +33,6 @@ class SelectorFactory:
                 selectors.append(SelectAllSelector())
             else:
                 raise ValueError(f"Unknown selector: {selector_name}")
+            
+        # print(selectors)
         return selectors

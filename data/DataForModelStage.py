@@ -30,6 +30,10 @@ class DataForModelStage:
     def run(self, symbol):
         # 特徴量データを読み込む
         full_data = self.selected_feature_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if full_data.empty:
+           print(f" {symbol} をスキップします")
+           return
 
         # date カラムを Timestamp 型に変換
         full_data['date'] = pd.to_datetime(full_data['date'])
@@ -57,4 +61,4 @@ class DataForModelStage:
         # 実践テストデータを保存
         self.practical_data_manager.save_data(practical_data, symbol)
 
-        print("Data For Model Pipeline completed successfully")
+        # print("Data For Model Pipeline completed successfully")

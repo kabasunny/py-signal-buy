@@ -19,7 +19,7 @@ class RFESelector(SupervisedFeatureSelectorABC):
     def __init__(self, n_features_to_select: int):
         self.n_features_to_select = n_features_to_select
         self.feature_names = None
-        self.model = LogisticRegression(max_iter=2000)  # max_iter を増やす
+        self.model = LogisticRegression(max_iter=10000)  # max_iter を増やす
 
     @ArgsChecker((None, pd.DataFrame, str), pd.DataFrame)
     def select_features(self, df: pd.DataFrame, target_column: str) -> pd.DataFrame:

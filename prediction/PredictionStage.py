@@ -1,7 +1,8 @@
 from models.ModelSaverLoader import ModelSaverLoader
 from data.DataManager import DataManager
-from models.ModelPredictor import ModelPredictor
+from prediction.ModelPredictor import ModelPredictor
 from typing import List
+import pandas as pd
 
 
 class PredictionStage:
@@ -39,6 +40,12 @@ class PredictionStage:
         features = practical_data.drop(
             columns=["date", "symbol", "label"]
         )  # 必要に応じて列を調整
+
+        # トレーニング期間を表示
+        start_date = pd.to_datetime(practical_data['date']).min().strftime('%Y-%m-%d')
+        end_date = pd.to_datetime(practical_data['date']).max().strftime('%Y-%m-%d')
+        years_difference = (pd.to_datetime(end_date) - pd.to_datetime(start_date)) / pd.Timedelta(days=365)
+        print(f"Practical period: {start_date} to {end_date} （約{years_difference:.1f}年間実務）")
 
         # モデルによる予測
         predictions_df = ModelPredictor.predict(self.models, features)

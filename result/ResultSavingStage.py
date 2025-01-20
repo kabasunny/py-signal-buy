@@ -31,9 +31,11 @@ class ResultSavingStage:
         for symbol in symbols:
             # raw_data_manager からデータを読み込む
             raw_data_df = self.raw_data_manager.load_data(symbol)
-            # print(
-            #     f"raw_data_df for シンボル {symbol}:\n", raw_data_df.head()
-            # )  # デバッグ用
+
+            # データフレームが空でないことを確認
+            if raw_data_df.empty:
+                print(f" {symbol} をスキップします")
+                continue
 
             # split_date の翌日以降のデータに絞り込む
             raw_data_df = raw_data_df[raw_data_df["date"] > self.split_date]
@@ -52,9 +54,11 @@ class ResultSavingStage:
 
             # predictions_data_manager からデータを読み込む
             predictions_df = self.real_pred_data_manager.load_data(symbol)
-            # print(
-            #     f"predictions_df for  シンボル {symbol}:\n", predictions_df.head()
-            # )  # デバッグ用
+
+            # データフレームが空でないことを確認
+            if predictions_df.empty:
+                print(f"データが見つからないため {symbol} をスキップします。")
+                continue
 
             # split_date の翌日以降のデータに絞り込む
             predictions_df = predictions_df[predictions_df["date"] > self.split_date]

@@ -36,6 +36,10 @@ class FeatureExtractionStage:
 
         # ラベルデータを読み込んでマージ
         target_df = self.label_data_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if target_df.empty:
+           print(f" {symbol} をスキップします")
+           return
         if "date" in target_df.columns:
             target_df["date"] = pd.to_datetime(target_df["date"])
 
@@ -84,9 +88,8 @@ class FeatureExtractionStage:
                     df_extracted[col] = df_temp[col]
                     extracted_columns.add(col)
 
-        print(
-            f"extracted feature columns({len(extracted_columns)}): {extracted_columns}"
-        )
+        print(f"extracted feature columns({len(extracted_columns)})")
+        # print(f"extracted feature columns({len(extracted_columns)}): {extracted_columns}")
 
         # 必要なカラムを追加
         df_extracted["date"] = df_with_label["date"]
@@ -107,4 +110,4 @@ class FeatureExtractionStage:
         # データを保存
         self.extracted_f_w_l_d_manager.save_data(df_extracted, symbol)
 
-        print("Extractor stage completed successfully")
+        # print("Extractor stage completed successfully")

@@ -22,6 +22,10 @@ class DataPreprocessingStage:
         # データの読み込み
         df = self.raw_data_manager.load_data(symbol)
         # print("Raw data loaded successfully")
+        # データフレームが空でないことを確認
+        if df.empty:
+           print(f" {symbol} をスキップします")
+           return
 
         # データの前処理
         df = MissingValueHandler.fill_missing_with_mean(df)
@@ -41,4 +45,4 @@ class DataPreprocessingStage:
         self.processed_data_manager.save_data(df, symbol)
         # print("Processed data saved successfully")
 
-        print("Preprocess pipeline completed successfully")
+        # print("Preprocess pipeline completed successfully")

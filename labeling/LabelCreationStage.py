@@ -23,6 +23,10 @@ class LabelCreateStage:
         """データパイプラインの実行"""
         # データの読み込み
         df = self.raw_data_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if df.empty:
+           print(f" {symbol} をスキップします")
+           return
 
         # trade_start_date を計算
         first_date = pd.to_datetime(df["date"].iloc[0])
@@ -35,4 +39,4 @@ class LabelCreateStage:
         # ラベルデータの保存
         self.label_data_manager.save_data(labels, symbol)
 
-        print("Label creation pipeline completed successfully")
+        # print("Label creation pipeline completed successfully")

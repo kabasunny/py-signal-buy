@@ -30,6 +30,10 @@ class FeatureSelectionStage:
         """
         # 正規化済みデータをロード
         df_normalized = self.normalized_f_d_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if df_normalized.empty:
+           print(f" {symbol} をスキップします")
+           return
 
         # date カラムを Timestamp 型に変換
         if "date" in df_normalized.columns:
@@ -37,6 +41,10 @@ class FeatureSelectionStage:
 
         # 抽出された特徴量データをロード
         df_extracted = self.extracted_f_w_l_d_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if df_extracted.empty:
+            print(f" {symbol} をスキップします")
+            return
 
         # ラベルカラムを除外してマージ
         if "date" in df_extracted.columns:
@@ -48,6 +56,10 @@ class FeatureSelectionStage:
 
         # ラベルデータを読み込んでマージ
         target_df = self.label_data_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if target_df.empty:
+            print(f" {symbol} をスキップします")
+            return
         if "date" in target_df.columns:
             target_df["date"] = pd.to_datetime(target_df["date"])
 
@@ -102,8 +114,10 @@ class FeatureSelectionStage:
         excluded_columns = (
             set(df_pre.drop(columns=["label"]).columns) - selected_columns
         )
-        print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
-        print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
+        print(f"selected feature columns({len(selected_columns)})")
+        print(f"Excluded feature columns({len(excluded_columns)})")
+        # print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
+        # print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
 
         # 必要なカラムを追加
         df_selected["date"] = df_with_label["date"]
@@ -124,4 +138,4 @@ class FeatureSelectionStage:
         # データを保存
         self.selected_f_w_l_d_manager.save_data(df_selected, symbol)
 
-        print("Selector pipeline completed successfully")
+        # print("Selector pipeline completed successfully")

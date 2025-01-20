@@ -23,4 +23,6 @@ class ExtractorFactory:
                 extractors.append(PCRFeatureExtractor(n_components=2))
             else:
                 raise ValueError(f"Unknown extractor: {extractor_name}")
+        
+        # print(extractors)
         return extractors

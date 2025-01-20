@@ -12,7 +12,6 @@ class ModelTrainingPipeline:
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors,  # 新しい引数を追加
     ):
         self.before_period_days = before_period_days
         self.split_date = split_date
@@ -21,7 +20,6 @@ class ModelTrainingPipeline:
         self.model_saver_loader = model_saver_loader
         self.model_created = False  # モデルが作成済みかどうかのフラグ
         self.data_managers = data_managers
-        self.selectors = selectors
 
         # 各ステージをインスタンス変数として保持
         self.data_for_model_stage = DataForModelStage(
@@ -49,7 +47,7 @@ class ModelTrainingPipeline:
                 start_time = time.time()
                 stage.run(symbol)
                 elapsed_time = time.time() - start_time
-                print(f"{stage_name} 処理時間: {elapsed_time:.4f} 秒")
+                print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
 
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")

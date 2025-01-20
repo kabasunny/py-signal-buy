@@ -13,7 +13,6 @@ class ModelPredictionPipeline:
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors,
         proto_saver_loader,
     ):
         self.before_period_days = before_period_days
@@ -23,7 +22,6 @@ class ModelPredictionPipeline:
         self.model_saver_loader = model_saver_loader
         self.model_created = False
         self.data_managers = data_managers
-        self.selectors = selectors
         self.proto_saver_loader = proto_saver_loader
 
         # 各パイプラインをインスタンス変数として保持
@@ -56,7 +54,7 @@ class ModelPredictionPipeline:
                 stage.run(symbol)
                 # print(f"\n symbol : {symbol} \n")
                 elapsed_time = time.time() - start_time
-                print(f"{stage_name} processing time: {elapsed_time:.4f} 秒")
+                print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
 
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
@@ -64,9 +62,12 @@ class ModelPredictionPipeline:
     def finish_prosess(self, symbols):
         print(f"Proto file processing for all symbols")
         # print(symbols)
+        start_time = time.time()
         self.proto_convert_stage.run(
             symbols
         )  # リストを受けるため他のパイプラインと異なる
+        elapsed_time = time.time() - start_time
+        print(f"処理時間: {elapsed_time:.4f} 秒, Proto file processing for all symbols")
 
         # # 保存したプロトコルバッファーの読み込み
         # loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file()

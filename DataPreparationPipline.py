@@ -84,7 +84,7 @@ class DataPreparationPipline:
                 start_time = time.time()
                 stage.run(symbol)
                 elapsed_time = time.time() - start_time
-                print(f"{stage_name} 処理時間: {elapsed_time:.4f} 秒")
+                print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
 
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")

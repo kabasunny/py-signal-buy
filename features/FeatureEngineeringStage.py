@@ -30,6 +30,10 @@ class FeatureEngineeringStage:
         # print("Run Feature creation pipeline")
         # データをロード
         df = self.processed_data_manager.load_data(symbol)
+        # データフレームが空でないことを確認
+        if df.empty:
+           print(f" {symbol} をスキップします")
+           return
         # print(f"df3\n{df.head(1)}")
         # trade_start_day を計算
         first_date = pd.to_datetime(df["date"].iloc[0])
@@ -103,4 +107,4 @@ class FeatureEngineeringStage:
 
         self.normalized_f_d_manager.save_data(df_normalized, symbol)
 
-        print("Feature creation pipeline completed successfully")
+        # print("Feature creation pipeline completed successfully")
