@@ -10,7 +10,6 @@ from selector.SelectorFactory import SelectorFactory
 import time
 
 
-
 class DataPreparationPipline:
     def __init__(
         self,
@@ -19,7 +18,7 @@ class DataPreparationPipline:
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors  # 新しい引数を追加
+        selectors,  # 新しい引数を追加
     ):
         self.before_period_days = before_period_days
         self.model_types = model_types
@@ -31,50 +30,50 @@ class DataPreparationPipline:
         self.selectors = selectors
 
         # 各パイプラインをインスタンス変数として保持
-        self.raw_data_pipeline = DataAcquisitionAndFormattingStage(
+        self.raw_data_stage = DataAcquisitionAndFormattingStage(
             self.data_managers["formated_raw"],
             fetcher=YahooFinanceStockDataFetcher(),
         )
-        self.preprocess_pipeline = DataPreprocessingStage(
+        self.preprocess_stage = DataPreprocessingStage(
             self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_pipeline = LabelCreatePipeline(
+        self.label_create_stage = LabelCreatePipeline(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
             self.before_period_days,
             TroughLabelCreator(),
         )
-        self.feature_pipeline = FeatureEngineeringStage(
+        self.feature_stage = FeatureEngineeringStage(
             self.data_managers["processed_raw"],
             self.data_managers["normalized_feature"],
             self.before_period_days,
             AnalyzerFactory.create_analyzers(self.feature_list_str),
         )
-        self.selector_pipeline = FeatureSelectionStage(
+        self.selector_stage = FeatureSelectionStage(
             self.data_managers["labeled"],
             self.data_managers["normalized_feature"],
             self.data_managers["selected_feature"],
             self.data_managers["selected_ft_with_label"],
-            SelectorFactory.create_selectors(self.selectors), 
+            SelectorFactory.create_selectors(self.selectors),
         )
 
     def process_symbol(self, symbol):
         print(f"Symbol of current data: {symbol}")
 
         try:
-            pipelines = [
-                ("RawDataPipeline", self.raw_data_pipeline),
-                ("PreprocessPipeline", self.preprocess_pipeline),
-                ("LabelCreatePipeline", self.label_create_pipeline),
-                ("FeaturePipeline", self.feature_pipeline),
-                ("SelectorPipeline", self.selector_pipeline),
+            stages = [
+                ("RawDataPipeline", self.raw_data_stage),
+                ("PreprocessPipeline", self.preprocess_stage),
+                ("LabelCreatePipeline", self.label_create_stage),
+                ("FeaturePipeline", self.feature_stage),
+                ("SelectorPipeline", self.selector_stage),
             ]
 
-            for pipeline_name, pipeline in pipelines:
+            for stage_name, stage in stages:
                 start_time = time.time()
-                pipeline.run(symbol)
+                stage.run(symbol)
                 elapsed_time = time.time() - start_time
-                print(f"{pipeline_name} 処理時間: {elapsed_time:.4f} 秒")
+                print(f"{stage_name} 処理時間: {elapsed_time:.4f} 秒")
 
         except Exception as e:
-            print(f"{symbol} の処理中にエラーが発生しました: {e}")
+            print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")

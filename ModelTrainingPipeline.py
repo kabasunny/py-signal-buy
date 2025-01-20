@@ -1,18 +1,18 @@
-
 from data.DataForModelStage import DataForModelStage
 from models.ModelTrainStage import ModelTrainStage
 import time
+
 
 class ModelTrainingPipeline:
     def __init__(
         self,
         before_period_days,  # 特徴量生成に必要な日数
-        split_date, # トレーニング最終日、翌日以降実践日
+        split_date,  # トレーニング最終日、翌日以降実践日
         model_types,
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors  # 新しい引数を追加
+        selectors,  # 新しい引数を追加
     ):
         self.before_period_days = before_period_days
         self.split_date = split_date
@@ -23,15 +23,14 @@ class ModelTrainingPipeline:
         self.data_managers = data_managers
         self.selectors = selectors
 
-        # 各パイプラインをインスタンス変数として保持
-        
-        self.data_for_model_pipeline = DataForModelStage(
+        # 各ステージをインスタンス変数として保持
+        self.data_for_model_stage = DataForModelStage(
             self.data_managers["selected_ft_with_label"],
             self.data_managers["training_and_test"],
             self.data_managers["practical"],
             self.split_date,
-            )
-        self.model_pipeline = ModelTrainStage(
+        )
+        self.model_stage = ModelTrainStage(
             self.data_managers["training_and_test"],
             self.model_saver_loader,
             self.model_types,
@@ -41,17 +40,16 @@ class ModelTrainingPipeline:
         print(f"Symbol of current data: {symbol}")
 
         try:
-            pipelines = [
-                ("DataForModelPipeline", self.data_for_model_pipeline),
-                ("ModelPipeline", self.model_pipeline),
-                ("ModelPredictPipeline", self.model_predict_pipeline),
+            stages = [
+                ("DataForModelStage", self.data_for_model_stage),
+                ("ModelTrainStage", self.model_stage),
             ]
 
-            for pipeline_name, pipeline in pipelines:
+            for stage_name, stage in stages:
                 start_time = time.time()
-                pipeline.run(symbol)
+                stage.run(symbol)
                 elapsed_time = time.time() - start_time
-                print(f"{pipeline_name} 処理時間: {elapsed_time:.4f} 秒")
+                print(f"{stage_name} 処理時間: {elapsed_time:.4f} 秒")
 
         except Exception as e:
-            print(f"{symbol} の処理中にエラーが発生しました: {e}")
+            print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")

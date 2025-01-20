@@ -32,7 +32,7 @@ class PredictionStage:
         correct_count = practical_data[practical_data["label"] == 1].shape[0]
         incorrect_count = practical_data[practical_data["label"] == 0].shape[0]
         ratio_pr = round(incorrect_count / correct_count, 1)
-        print(f"real_prediction by trained model... correct:incorrect = 1:{ratio_pr}")
+        print(f"prediction by trained model... correct:incorrect = 1:{ratio_pr}")
         print(f"correct:{correct_count}, incorrect:{incorrect_count}")
 
         # 特徴量を抽出
@@ -51,7 +51,6 @@ class PredictionStage:
         predictions_df["symbol"] = practical_data["symbol"]
         predictions_df["label"] = practical_data["label"]
         self.real_predictions_data_manager.save_data(predictions_df, symbol)
-        
 
         # モデルの評価
         evaluations_df = ModelPredictor.evaluate(
@@ -60,5 +59,3 @@ class PredictionStage:
 
         # 評価結果を出力
         print(evaluations_df)
-
-        
