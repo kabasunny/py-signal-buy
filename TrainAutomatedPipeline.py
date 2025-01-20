@@ -1,7 +1,7 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreationStage import LabelCreatePipeline
+from labeling.LabelCreationStage import LabelCreateStage
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
@@ -13,7 +13,6 @@ from models.ModelPredictPipeline import ModelPredictPipeline
 import time
 
 
-
 class TrainAutomatedPipeline:
     def __init__(
         self,
@@ -22,7 +21,7 @@ class TrainAutomatedPipeline:
         feature_list_str,
         model_saver_loader,
         data_managers,
-        selectors  # 新しい引数を追加
+        selectors,  # 新しい引数を追加
     ):
         self.before_period_days = before_period_days
         self.model_types = model_types
@@ -41,7 +40,7 @@ class TrainAutomatedPipeline:
         self.preprocess_pipeline = DataPreprocessingStage(
             self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_pipeline = LabelCreatePipeline(
+        self.label_create_pipeline = LabelCreateStage(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
             self.before_period_days,
@@ -58,7 +57,7 @@ class TrainAutomatedPipeline:
             self.data_managers["normalized_feature"],
             self.data_managers["selected_feature"],
             self.data_managers["selected_ft_with_label"],
-            SelectorFactory.create_selectors(self.selectors), 
+            SelectorFactory.create_selectors(self.selectors),
         )
         self.data_for_model_pipeline = DataForModelStage(
             self.data_managers["labeled"],

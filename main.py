@@ -40,7 +40,7 @@ def main():
         "processed_raw",
         "labeled",
         "normalized_feature",
-        "selected_feature",
+        "extracted_ft_with_label",
         "selected_ft_with_label",
         "training_and_test",
         "practical",
@@ -53,12 +53,21 @@ def main():
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    selectors = [
-        # "Tree",
-        # "Lasso",
-        # "Correlation",
+    extractors = [
         "PCA",
-        "SelectAll",
+        "LDA",
+        "ICA",
+        "PCR",
+    ]
+
+    selectors = [
+        "Tree",  # 決定木に基づく特徴量選択
+        "Lasso",  # Lasso回帰による特徴量選択
+        "Correlation",  # 相関に基づく特徴量選択
+        "MutualInformation",  # 相互情報量に基づく特徴量選択
+        "RFE",  # 再帰的特徴量削減
+        "VarianceThreshold",  # 分散閾値に基づく特徴量選択
+        # "SelectAll",  # 全特徴量を選択
     ]
 
     data_preparation = DataPreparationPipline(
@@ -67,6 +76,7 @@ def main():
         feature_list_str,
         model_saver_loader,
         data_managers,
+        extractors,
         selectors,  # 新しい引数を追加
     )
 

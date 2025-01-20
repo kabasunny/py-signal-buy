@@ -8,7 +8,7 @@ project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from labeling.LabelCreationStage import LabelCreatePipeline
+from labeling.LabelCreationStage import LabelCreateStage
 from data.DataManager import DataManager
 from labeling.TroughLabelCreator import TroughLabelCreator
 from datetime import datetime
@@ -27,7 +27,14 @@ if __name__ == "__main__":
 
     data_managers = {}
     for d_m_name in data_manager_names:
-        data_managers[d_m_name] = DataManager(current_date_str, base_data_path, d_m_name, file_ext)
-    
+        data_managers[d_m_name] = DataManager(
+            current_date_str, base_data_path, d_m_name, file_ext
+        )
+
     # LabelCreationPipeline のインスタンスを作成し、実行
-    LabelCreatePipeline(data_managers["formated_raw"], data_managers["labeled"], before_period_days, TroughLabelCreator()).run(f"{symbol}")
+    LabelCreateStage(
+        data_managers["formated_raw"],
+        data_managers["labeled"],
+        before_period_days,
+        TroughLabelCreator(),
+    ).run(f"{symbol}")

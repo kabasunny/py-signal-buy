@@ -1,7 +1,7 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreationStage import LabelCreatePipeline
+from labeling.LabelCreationStage import LabelCreateStage
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
@@ -13,7 +13,6 @@ import time
 from result.print_ml_stock_response import print_ml_stock_response_summary
 
 
-
 class RealDataAutomatedPipeline:
     def __init__(
         self,
@@ -23,13 +22,13 @@ class RealDataAutomatedPipeline:
         model_saver_loader,
         data_managers,
         selectors,
-        proto_saver_loader
+        proto_saver_loader,
     ):
         self.before_period_days = before_period_days
         self.model_types = model_types
         self.feature_list_str = feature_list_str
         self.model_saver_loader = model_saver_loader
-        self.model_created = False 
+        self.model_created = False
         self.data_managers = data_managers
         self.selectors = selectors
         self.proto_saver_loader = proto_saver_loader
@@ -40,10 +39,9 @@ class RealDataAutomatedPipeline:
             fetcher=YahooFinanceStockDataFetcher(),
         )
         self.preprocess_pipeline = DataPreprocessingStage(
-            self.data_managers["formated_raw"], 
-            self.data_managers["processed_raw"]
+            self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_pipeline = LabelCreatePipeline(
+        self.label_create_pipeline = LabelCreateStage(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
             self.before_period_days,
@@ -73,9 +71,9 @@ class RealDataAutomatedPipeline:
         self.proto_convert_pipeline = ResultSavingStage(
             self.data_managers["formated_raw"],
             self.data_managers["real_predictions"],
-            self.proto_saver_loader, 
+            self.proto_saver_loader,
             self.model_types,
-            )
+        )
 
     def process_symbol(self, symbol):
         print(f"Symbol of current data: {symbol}")
@@ -102,9 +100,10 @@ class RealDataAutomatedPipeline:
     def finish_prosess(self, symbols):
         print(f"Proto file processing for all symbols")
         print(symbols)
-        self.proto_convert_pipeline.run(symbols) # リストを受けるため他のパイプラインと異なる
+        self.proto_convert_pipeline.run(
+            symbols
+        )  # リストを受けるため他のパイプラインと異なる
 
-        
         # # 保存したプロトコルバッファーの読み込み
         # loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file()
         # print_ml_stock_response_summary(loaded_proto_response)

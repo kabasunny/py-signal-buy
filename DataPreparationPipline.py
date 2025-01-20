@@ -1,11 +1,13 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreationStage import LabelCreatePipeline
+from labeling.LabelCreationStage import LabelCreateStage
 from labeling.TroughLabelCreator import TroughLabelCreator
 from features.FeatureEngineeringStage import FeatureEngineeringStage
+from extractor.FeatureExtractionStage import FeatureExtractionStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
 from features.AnalyzerFactory import AnalyzerFactory
+from extractor.ExtractorFactory import ExtractorFactory
 from selector.SelectorFactory import SelectorFactory
 import time
 
@@ -18,6 +20,7 @@ class DataPreparationPipline:
         feature_list_str,
         model_saver_loader,
         data_managers,
+        extractors,
         selectors,  # 新しい引数を追加
     ):
         self.before_period_days = before_period_days
@@ -27,6 +30,7 @@ class DataPreparationPipline:
         self.model_created = False  # モデルが作成済みかどうかのフラグ
 
         self.data_managers = data_managers
+        self.extractors = extractors
         self.selectors = selectors
 
         # 各パイプラインをインスタンス変数として保持
@@ -37,7 +41,7 @@ class DataPreparationPipline:
         self.preprocess_stage = DataPreprocessingStage(
             self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_stage = LabelCreatePipeline(
+        self.label_create_stage = LabelCreateStage(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
             self.before_period_days,
@@ -49,10 +53,16 @@ class DataPreparationPipline:
             self.before_period_days,
             AnalyzerFactory.create_analyzers(self.feature_list_str),
         )
+        self.extractor_stage = FeatureExtractionStage(
+            self.data_managers["labeled"],
+            self.data_managers["normalized_feature"],
+            self.data_managers["extracted_ft_with_label"],
+            ExtractorFactory.create_extractors(self.extractors),
+        )
         self.selector_stage = FeatureSelectionStage(
             self.data_managers["labeled"],
             self.data_managers["normalized_feature"],
-            self.data_managers["selected_feature"],
+            self.data_managers["extracted_ft_with_label"],
             self.data_managers["selected_ft_with_label"],
             SelectorFactory.create_selectors(self.selectors),
         )
@@ -62,11 +72,12 @@ class DataPreparationPipline:
 
         try:
             stages = [
-                ("RawDataPipeline", self.raw_data_stage),
-                ("PreprocessPipeline", self.preprocess_stage),
-                ("LabelCreatePipeline", self.label_create_stage),
-                ("FeaturePipeline", self.feature_stage),
-                ("SelectorPipeline", self.selector_stage),
+                ("DataAcquisitionAndFormattingStage", self.raw_data_stage),
+                ("DataPreprocessingStage", self.preprocess_stage),
+                ("LabelCreateStage", self.label_create_stage),
+                ("FeatureEngineeringStage", self.feature_stage),
+                ("FeatureExtractionStage", self.extractor_stage),
+                ("FeatureSelectionStage", self.selector_stage),
             ]
 
             for stage_name, stage in stages:

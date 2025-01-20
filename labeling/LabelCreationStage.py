@@ -4,7 +4,7 @@ from data.DataManager import DataManager
 from labeling.LabelCreatorABC import LabelCreatorABC
 
 
-class LabelCreatePipeline:
+class LabelCreateStage:
     @ArgsChecker((None, DataManager, DataManager, int, LabelCreatorABC), None)
     def __init__(
         self,

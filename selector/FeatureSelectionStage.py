@@ -1,6 +1,5 @@
 import pandas as pd
 from selector.SupervisedFeatureSelectorABC import SupervisedFeatureSelectorABC
-from selector.UnsupervisedFeatureSelectorABC import UnsupervisedFeatureSelectorABC
 from decorators.ArgsChecker import ArgsChecker
 from data.DataManager import DataManager
 
@@ -11,13 +10,13 @@ class FeatureSelectionStage:
         self,
         label_data_manager: DataManager,
         normalized_f_d_manager: DataManager,
-        extracted_ft_w_l_manager: DataManager,
+        extracted_f_w_l_d_manager: DataManager,
         selected_f_w_l_d_manager: DataManager,
         selectors: list,
     ):
         self.label_data_manager = label_data_manager
         self.normalized_f_d_manager = normalized_f_d_manager
-        self.extracted_ft_w_l_manager = extracted_ft_w_l_manager
+        self.extracted_f_w_l_d_manager = extracted_f_w_l_d_manager
         self.selected_f_w_l_d_manager = selected_f_w_l_d_manager
         self.selectors = selectors
 
@@ -37,7 +36,7 @@ class FeatureSelectionStage:
             df_normalized["date"] = pd.to_datetime(df_normalized["date"])
 
         # 抽出された特徴量データをロード
-        df_extracted = self.extracted_ft_w_l_manager.load_data(symbol)
+        df_extracted = self.extracted_f_w_l_d_manager.load_data(symbol)
 
         # ラベルカラムを除外してマージ
         if "date" in df_extracted.columns:
