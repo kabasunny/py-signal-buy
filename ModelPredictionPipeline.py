@@ -52,23 +52,23 @@ class ModelPredictionPipeline:
             for stage_name, stage in stages:
                 start_time = time.time()
                 stage.run(symbol)
-                # print(f"\n symbol : {symbol} \n")
                 elapsed_time = time.time() - start_time
                 print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
+
 
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
 
     def finish_prosess(self, symbols):
-        # print(f"Proto file processing for all symbols")
-        # print(symbols)
         start_time = time.time()
+        # 平均評価を表示するメソッドの呼び出し
+        self.real_predict_stage.print_avg_evaluations()
         self.proto_convert_stage.run(
             symbols
         )  # リストを受けるため他のパイプラインと異なる
         elapsed_time = time.time() - start_time
         print(f"処理時間: {elapsed_time:.4f} 秒, Proto file processing for all symbols")
 
-        # # 保存したプロトコルバッファーの読み込み
+        # 保存したプロトコルバッファーの読み込み
         # loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file()
         # print_ml_stock_response_summary(loaded_proto_response)

@@ -4,7 +4,6 @@ from prediction.ModelPredictor import ModelPredictor
 from typing import List
 import pandas as pd
 
-
 class PredictionStage:
     def __init__(
         self,
@@ -18,6 +17,8 @@ class PredictionStage:
         self.real_predictions_data_manager = bach_predictions_data_manager
         self.model_types = model_types
         self.models = None
+        self.evaluations_sum = pd.DataFrame()  # 全評価の合計を保存
+        self.evaluations_count = 0  # 評価の数をカウント
 
     def run(self, symbol):
         # モデルの読み込み
@@ -68,5 +69,23 @@ class PredictionStage:
             self.models, features, practical_data["label"]
         )
 
+        # 評価結果の合計を更新
+        if self.evaluations_sum.empty:
+            self.evaluations_sum = evaluations_df
+        else:
+            self.evaluations_sum = self.evaluations_sum.add(evaluations_df, fill_value=0)
+        
+        # 評価の数を増やす
+        self.evaluations_count += 1
+
         # 評価結果を出力
         print(evaluations_df)
+
+    def print_avg_evaluations(self):
+        # 評価の平均を計算して出力
+        if self.evaluations_count > 0:
+            evaluations_avg = self.evaluations_sum / self.evaluations_count
+            print("評価指標の平均値:")
+            print(evaluations_avg)
+        else:
+            print("評価がまだありません。")
