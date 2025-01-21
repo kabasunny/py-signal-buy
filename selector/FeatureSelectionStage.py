@@ -52,6 +52,13 @@ class FeatureSelectionStage:
         if "date" in df_extracted.columns:
             df_extracted["date"] = pd.to_datetime(df_extracted["date"], errors="coerce")
 
+        # symbol カラムをドロップしてからマージ
+        if "symbol" in df_normalized.columns:
+            df_normalized = df_normalized.drop(columns=["symbol"])
+
+        if "symbol" in df_extracted.columns:
+            df_extracted = df_extracted.drop(columns=["symbol"])
+
         # 抽出された特徴量データと正規化済みデータをマージ
         df_combined = df_normalized.merge(df_extracted, on="date")
 
@@ -73,11 +80,7 @@ class FeatureSelectionStage:
         )
 
         # symbol を一行目から取得して保存
-        symbol_value = (
-            df_normalized["symbol"].iloc[0]
-            if "symbol" in df_normalized.columns
-            else None
-        )
+        symbol_value = symbol  # 直接シンボル名を使用
 
         # 不要なカラムをドロップ
         columns_to_drop = ["symbol", "open", "high", "low", "close", "volume"]
@@ -94,8 +97,7 @@ class FeatureSelectionStage:
         # 各セレクターに初期データを渡して実行
         for selector in self.selectors:
             df_initial = df_pre.copy()
-            # print(f"Running selector: {selector.__class__.__name__}")
-            # print(f"Columns in df_initial: {df_initial.columns}")
+            print(f"Running selector: {selector.__class__.__name__}")
 
             if "label" not in df_initial.columns:
                 raise KeyError("The 'label' column is missing from the dataframe.")
@@ -113,14 +115,22 @@ class FeatureSelectionStage:
                     df_selected[col] = df_temp[col]
                     selected_columns.add(col)
 
+            excluded_columns = (
+                set(df_pre.drop(columns=["label"]).columns) - selected_columns
+            )
+            # print(f"selected feature columns({len(selected_columns)})")
+            # print(f"Excluded feature columns({len(excluded_columns)})")
+
         # 除外されたカラムを表示
         excluded_columns = (
             set(df_pre.drop(columns=["label"]).columns) - selected_columns
         )
-        print(f"selected feature columns({len(selected_columns)})")
-        print(f"Excluded feature columns({len(excluded_columns)})")
-        # print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
-        # print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
+
+        # print(f"final status")
+        # print(f"selected feature columns({len(selected_columns)})")
+        # print(f"Excluded feature columns({len(excluded_columns)})")
+        print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
+        print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
 
         # 必要なカラムを追加
         df_selected["date"] = df_with_label["date"]
@@ -140,5 +150,3 @@ class FeatureSelectionStage:
 
         # データを保存
         self.selected_f_w_l_d_manager.save_data(df_selected, symbol)
-
-        # print("Selector pipeline completed successfully")

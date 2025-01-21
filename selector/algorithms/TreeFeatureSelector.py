@@ -14,10 +14,14 @@ class TreeFeatureSelector(SupervisedFeatureSelectorABC):
         model (RandomForestClassifier): ランダムフォレスト分類器
     """
 
-    @ArgsChecker((None, int), None)
-    def __init__(self, n_estimators: int = 100, random_state: int = 42):
+    @ArgsChecker((None, int, int), None)
+    def __init__(
+        self, n_estimators: int = 100, max_features: int = None, random_state: int = 42
+    ):
         self.model = RandomForestClassifier(
-            n_estimators=n_estimators, random_state=random_state
+            n_estimators=n_estimators,
+            max_features=max_features,
+            random_state=random_state,
         )
 
     @ArgsChecker((None, pd.DataFrame, str), pd.DataFrame)

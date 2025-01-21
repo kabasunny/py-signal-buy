@@ -31,7 +31,13 @@ def main():
         current_date_str, model_save_path="models/trained_models", model_file_ext="pkl"
     )
 
-    feature_list_str = ["peak_trough", "fourier", "volume", "price", "past"]
+    feature_list_str = [
+        # "peak_trough",
+        # "fourier",
+        "volume",
+        "price",
+        "past",
+    ]
 
     base_data_path = "data/stock_data"
     file_ext = "csv"  # "parquet"
@@ -41,8 +47,8 @@ def main():
         "processed_raw",
         "labeled",
         "normalized_feature",
-        "extracted_ft_with_label",
-        "selected_ft_with_label",
+        "extracted_feature",
+        "selected_feature",
         "training_and_test",
         "practical",
         "predictions",
@@ -57,12 +63,12 @@ def main():
     extractors = ["PCA", "LDA", "ICA", "PCR"]
 
     selectors = [
-        "Tree",  # 決定木に基づく特徴量選択
-        "Lasso",  # Lasso回帰による特徴量選択
-        "Correlation",  # 相関に基づく特徴量選択
-        "MutualInformation",  # 相互情報量に基づく特徴量選択
-        "RFE",  # 再帰的特徴量削減
-        "VarianceThreshold",  # 分散閾値に基づく特徴量選択
+        # "Tree",  # 決定木に基づく特徴量選択
+        # "Lasso",  # Lasso回帰による特徴量選択
+        # "Correlation",  # 相関に基づく特徴量選択
+        # "MutualInformation",  # 相互情報量に基づく特徴量選択
+        # "RFE",  # 再帰的特徴量削減
+        # "VarianceThreshold",  # 分散閾値に基づく特徴量選択
         "SelectAll",  # 全特徴量を選択
     ]
 

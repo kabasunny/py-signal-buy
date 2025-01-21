@@ -24,7 +24,7 @@ class ModelTrainingPipeline:
         # 各ステージをインスタンス変数として保持
         self.data_for_model_stage = DataForModelStage(
             self.data_managers["labeled"],
-            self.data_managers["selected_ft_with_label"],
+            self.data_managers["selected_feature"],
             self.data_managers["training_and_test"],
             self.data_managers["practical"],
             self.split_date,

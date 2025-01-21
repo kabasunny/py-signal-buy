@@ -1,7 +1,7 @@
-from extractor.LDAFeatureExtractor import LDAFeatureExtractor
-from extractor.ICAFeatureExtractor import ICAFeatureExtractor
-from extractor.PCRFeatureExtractor import PCRFeatureExtractor
-from extractor.PCAFeatureExtractor import PCAFeatureExtractor
+from extractor.algorithms.LDAFeatureExtractor import LDAFeatureExtractor
+from extractor.algorithms.ICAFeatureExtractor import ICAFeatureExtractor
+from extractor.algorithms.PCRFeatureExtractor import PCRFeatureExtractor
+from extractor.algorithms.PCAFeatureExtractor import PCAFeatureExtractor
 
 
 class ExtractorFactory:
@@ -23,6 +23,6 @@ class ExtractorFactory:
                 extractors.append(PCRFeatureExtractor(n_components=2))
             else:
                 raise ValueError(f"Unknown extractor: {extractor_name}")
-        
+
         # print(extractors)
         return extractors

@@ -33,7 +33,7 @@ class PredictionStage:
         correct_count = practical_data[practical_data["label"] == 1].shape[0]
         incorrect_count = practical_data[practical_data["label"] == 0].shape[0]
         ratio_pr = round(incorrect_count / correct_count, 1)
-        print(f"...prediction by trained model... correct:incorrect = 1:{ratio_pr}")
+        print(f"prediction by trained model... [correct : incorrect = 1 : {ratio_pr}]")
         print(f"correct:{correct_count}, incorrect:{incorrect_count}")
 
         # 特徴量を抽出

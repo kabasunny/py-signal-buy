@@ -60,45 +60,10 @@ class FeatureCreationStage:
         ]
         df_with_features.drop(columns=columns_to_drop, inplace=True)
 
-        # 正規化する列を指定
-        columns_to_normalize = [
-            "50dtme",
-            "30wtme",
-            "24mtme",
-            "ff2",
-            "ff3",
-            "ff4",
-            "vsma10",
-            "vsma30",
-            "vstd10",
-            "vstd30",
-            "vroc",
-            "v_bb_up",
-            "v_bb_low",
-            "sma10",
-            "sma30",
-            "sma90",
-            "sma180",
-            "sma360",
-            "bb_up",
-            "bb_low",
-            "rsi",
-            "momentum",
-            "adx",
-            "macd",
-            "macd_signal",
-            "macd_hist",
-            "vwap",
-            "roc",
-            "cci",
-            "atr",
-            "wr",
-        ]
-
-        # 1個前から10個前の特徴量を正規化する列に追加
-        for i in range(1, 6):
-            # columns_to_normalize.append(f"lag_{i}") # セレクターによる除外率が高い
-            columns_to_normalize.append(f"lag_{i}_indicator")
+        # 正規化する列を自動で指定
+        columns_to_normalize = df_with_features.columns.difference(
+            ["date", "symbol"]
+        ).tolist()
 
         # 特徴量を正規化
         df_normalized = self.normalizer.normalize(

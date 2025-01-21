@@ -32,7 +32,7 @@ class ModelTrainStage:
             d = self.saver_loader.check_existing_models(self.model_types)
             if d:
                 confirm = (
-                    input(f"{d} 保存済みモデルを引き継ぎ、実行しますか? (Y/N): ")
+                    input(f"{d} 前回モデルを引き継ぎ、実行しますか? (Y/N): ")
                     .strip()
                     .upper()
                 )
@@ -61,7 +61,7 @@ class ModelTrainStage:
         correct_count = full_data[full_data["label"] == 1].shape[0]
         incorrect_count = full_data[full_data["label"] == 0].shape[0]
         ratio_tt = round(incorrect_count / correct_count, 1)
-        print(f"...training... correct : incorrect = 1 : {ratio_tt}")
+        print(f"training and testing... [correct : incorrect = 1 : {ratio_tt}]")
         print(f"correct:{correct_count}, incorrect:{incorrect_count}")
 
         self.X_train, self.X_test, self.y_train, self.y_test = (

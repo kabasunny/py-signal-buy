@@ -33,14 +33,14 @@ class FeatureEngineeringPipline:
         self.extractor_stage = FeatureExtractionStage(
             self.data_managers["labeled"],
             self.data_managers["normalized_feature"],
-            self.data_managers["extracted_ft_with_label"],
+            self.data_managers["extracted_feature"],
             ExtractorFactory.create_extractors(self.extractors),
         )
         self.selector_stage = FeatureSelectionStage(
             self.data_managers["labeled"],
             self.data_managers["normalized_feature"],
-            self.data_managers["extracted_ft_with_label"],
-            self.data_managers["selected_ft_with_label"],
+            self.data_managers["extracted_feature"],
+            self.data_managers["selected_feature"],
             SelectorFactory.create_selectors(self.selectors),
         )
 
