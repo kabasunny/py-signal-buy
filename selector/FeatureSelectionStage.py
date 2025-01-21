@@ -32,12 +32,14 @@ class FeatureSelectionStage:
         df_normalized = self.normalized_f_d_manager.load_data(symbol)
         # データフレームが空でないことを確認
         if df_normalized.empty:
-           print(f" {symbol} をスキップします")
-           return
+            print(f" {symbol} をスキップします")
+            return
 
         # date カラムを Timestamp 型に変換
         if "date" in df_normalized.columns:
-            df_normalized["date"] = pd.to_datetime(df_normalized["date"])
+            df_normalized["date"] = pd.to_datetime(
+                df_normalized["date"], errors="coerce"
+            )
 
         # 抽出された特徴量データをロード
         df_extracted = self.extracted_f_w_l_d_manager.load_data(symbol)
@@ -46,13 +48,12 @@ class FeatureSelectionStage:
             print(f" {symbol} をスキップします")
             return
 
-        # ラベルカラムを除外してマージ
+        # date カラムを Timestamp 型に変換
         if "date" in df_extracted.columns:
-            df_extracted["date"] = pd.to_datetime(df_extracted["date"])
-        df_extracted_no_label = df_extracted.drop(columns=["label"])
+            df_extracted["date"] = pd.to_datetime(df_extracted["date"], errors="coerce")
 
         # 抽出された特徴量データと正規化済みデータをマージ
-        df_combined = df_normalized.merge(df_extracted_no_label, on="date")
+        df_combined = df_normalized.merge(df_extracted, on="date")
 
         # ラベルデータを読み込んでマージ
         target_df = self.label_data_manager.load_data(symbol)
@@ -60,8 +61,10 @@ class FeatureSelectionStage:
         if target_df.empty:
             print(f" {symbol} をスキップします")
             return
+
+        # date カラムを Timestamp 型に変換
         if "date" in target_df.columns:
-            target_df["date"] = pd.to_datetime(target_df["date"])
+            target_df["date"] = pd.to_datetime(target_df["date"], errors="coerce")
 
         df_with_label = df_combined.merge(
             target_df[["date", "label"]],
@@ -125,9 +128,9 @@ class FeatureSelectionStage:
         if symbol_value is not None:
             df_selected["symbol"] = symbol_value
 
-        # ラベル付きデータを準備
-        if "label" in df_with_label.columns:
-            df_selected["label"] = df_with_label["label"]
+        # `label` カラムを削除して保存する
+        if "label" in df_selected.columns:
+            df_selected = df_selected.drop(columns=["label"])
 
         # カラムの順序を指定
         columns_order = ["date", "symbol"] + [

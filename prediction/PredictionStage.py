@@ -33,7 +33,7 @@ class PredictionStage:
         correct_count = practical_data[practical_data["label"] == 1].shape[0]
         incorrect_count = practical_data[practical_data["label"] == 0].shape[0]
         ratio_pr = round(incorrect_count / correct_count, 1)
-        print(f"prediction by trained model... correct:incorrect = 1:{ratio_pr}")
+        print(f"...prediction by trained model... correct:incorrect = 1:{ratio_pr}")
         print(f"correct:{correct_count}, incorrect:{incorrect_count}")
 
         # 特徴量を抽出
@@ -42,10 +42,14 @@ class PredictionStage:
         )  # 必要に応じて列を調整
 
         # トレーニング期間を表示
-        start_date = pd.to_datetime(practical_data['date']).min().strftime('%Y-%m-%d')
-        end_date = pd.to_datetime(practical_data['date']).max().strftime('%Y-%m-%d')
-        years_difference = (pd.to_datetime(end_date) - pd.to_datetime(start_date)) / pd.Timedelta(days=365)
-        print(f"Practical period: {start_date} to {end_date} （約{years_difference:.1f}年間実務）")
+        start_date = pd.to_datetime(practical_data["date"]).min().strftime("%Y-%m-%d")
+        end_date = pd.to_datetime(practical_data["date"]).max().strftime("%Y-%m-%d")
+        years_difference = (
+            pd.to_datetime(end_date) - pd.to_datetime(start_date)
+        ) / pd.Timedelta(days=365)
+        print(
+            f"Practical period: {start_date} to {end_date} （約{years_difference:.1f}年間実務）"
+        )
 
         # モデルによる予測
         predictions_df = ModelPredictor.predict(self.models, features)

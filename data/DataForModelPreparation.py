@@ -3,6 +3,7 @@ from decorators.ArgsChecker import ArgsChecker
 from data.DataManager import DataManager
 from sklearn.model_selection import train_test_split
 
+
 class DataForModelPreparation:
     @staticmethod
     @ArgsChecker((DataManager, DataManager, str), pd.DataFrame)  # 型チェックを追加
@@ -40,7 +41,9 @@ class DataForModelPreparation:
 
         # 不正解データをランダムに分割
         incorrect_data_train_eval = incorrect_data.sample(frac=0.5, random_state=42)
-        incorrect_data_practical_test = incorrect_data.drop(incorrect_data_train_eval.index)
+        incorrect_data_practical_test = incorrect_data.drop(
+            incorrect_data_train_eval.index
+        )
 
         return (
             correct_data_train_eval,
@@ -54,6 +57,10 @@ class DataForModelPreparation:
     def prepare_training_and_test_data(
         correct_data_train_eval, incorrect_data_train_eval, test_size=0.2
     ):
+        print(
+            f"Data has been split into Training: {(1-test_size)*100}% and Testing: {test_size*100}%"
+        )
+
         # 訓練データとテストデータに分割
         combined_train_eval_data = pd.concat(
             [correct_data_train_eval, incorrect_data_train_eval]
