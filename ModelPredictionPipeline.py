@@ -42,7 +42,7 @@ class ModelPredictionPipeline:
         )
 
     def process_symbol(self, symbol):
-        print(f"Symbol of current data: {symbol}")
+        print(f"<< Now processing symbol {symbol} in {self.__class__.__name__} >>")
 
         try:
             stages = [
@@ -60,7 +60,7 @@ class ModelPredictionPipeline:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
 
     def finish_prosess(self, symbols):
-        print(f"Proto file processing for all symbols")
+        # print(f"Proto file processing for all symbols")
         # print(symbols)
         start_time = time.time()
         self.proto_convert_stage.run(

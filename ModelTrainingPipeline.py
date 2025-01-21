@@ -35,7 +35,7 @@ class ModelTrainingPipeline:
         )
 
     def process_symbol(self, symbol):
-        print(f"Symbol of current data: {symbol}")
+        print(f"<< Now processing symbol {symbol} in {self.__class__.__name__} >>")
 
         try:
             stages = [

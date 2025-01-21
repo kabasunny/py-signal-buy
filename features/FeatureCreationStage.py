@@ -4,7 +4,7 @@ from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをイ
 from data.DataManager import DataManager
 
 
-class FeatureEngineeringStage:
+class FeatureCreationStage:
     @ArgsChecker((None, DataManager, DataManager, int, list), None)
     def __init__(
         self,
@@ -32,8 +32,8 @@ class FeatureEngineeringStage:
         df = self.processed_data_manager.load_data(symbol)
         # データフレームが空でないことを確認
         if df.empty:
-           print(f" {symbol} をスキップします")
-           return
+            print(f" {symbol} をスキップします")
+            return
         # print(f"df3\n{df.head(1)}")
         # trade_start_day を計算
         first_date = pd.to_datetime(df["date"].iloc[0])

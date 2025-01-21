@@ -23,7 +23,7 @@ class LDAFeatureExtractor(SupervisedFeatureExtractorABC):
 
         if self.n_components > max_components:
             print(
-                f"Adjusting n_components from {self.n_components} to {max_components}"
+                f"Adjusting n_components from {self.n_components} to {max_components} in {self.__class__.__name__}"
             )
             self.n_components = max_components
 

@@ -31,4 +31,4 @@ class DataAcquisitionAndFormattingStage:
         self.raw_data_manager.save_data(formated_data, symbol)  # データを保存
         # print("Data saving completed")  # データ保存完了のメッセージを表示
 
-        print("Data pipeline completed successfully")
+        # print("Data pipeline completed successfully")
