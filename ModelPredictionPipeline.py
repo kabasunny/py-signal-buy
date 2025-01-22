@@ -55,7 +55,6 @@ class ModelPredictionPipeline:
                 elapsed_time = time.time() - start_time
                 print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
 
-
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
 
@@ -67,7 +66,9 @@ class ModelPredictionPipeline:
             symbols
         )  # リストを受けるため他のパイプラインと異なる
         elapsed_time = time.time() - start_time
-        print(f"処理時間: {elapsed_time:.4f} 秒, Proto file processing for all symbols")
+        print(
+            f"処理時間: {elapsed_time:.4f} 秒, Proto file processing for {len(symbols)} symbols"
+        )
 
         # 保存したプロトコルバッファーの読み込み
         # loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file()
