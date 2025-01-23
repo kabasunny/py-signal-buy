@@ -5,7 +5,7 @@ from features.FeatureCreatorABC import FeatureCreatorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
 
-class FourierAnalyzer(FeatureCreatorABC):
+class FourierFeatureCreator(FeatureCreatorABC):
     @ArgsChecker((None, pd.DataFrame, pd.Timestamp), pd.DataFrame)
     def create_features(
         self, df: pd.DataFrame, trade_start_date: pd.Timestamp

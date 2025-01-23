@@ -1,7 +1,7 @@
 from features.FeatureCreationStage import FeatureCreationStage
 from extractor.FeatureExtractionStage import FeatureExtractionStage
 from selector.FeatureSelectionStage import FeatureSelectionStage
-from features.AnalyzerFactory import AnalyzerFactory
+from features.FeatureCreatorFactory import FeatureCreatorFactory
 from extractor.ExtractorFactory import ExtractorFactory
 from selector.SelectorFactory import SelectorFactory
 import time
@@ -28,7 +28,7 @@ class FeatureEngineeringPipline:
             self.data_managers["processed_raw"],
             self.data_managers["normalized_feature"],
             self.before_period_days,
-            AnalyzerFactory.create_analyzers(self.feature_list_str),
+            FeatureCreatorFactory.create_feature_creators(self.feature_list_str),
         )
         self.extractor_stage = FeatureExtractionStage(
             self.data_managers["labeled"],

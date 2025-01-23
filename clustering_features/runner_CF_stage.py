@@ -1,5 +1,6 @@
 import sys
 import os
+from datetime import datetime
 
 # プロジェクトのルートディレクトリを sys.path に追加
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -7,10 +8,11 @@ project_root = os.path.abspath(os.path.join(current_dir, ".."))
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from features.FeatureCreationStage import FeatureCreationStage
+from clustering_features.ClusteringFeatureStage import ClusteringFeatureStage
 from data.DataManager import DataManager
-from features.FeatureCreatorFactory import FeatureCreatorFactory
-from datetime import datetime
+from clustering_features.ClusteringFeatureCreatorFactory import (
+    ClusteringFeatureCreatorFactory,
+)
 
 if __name__ == "__main__":
     current_date_str = datetime.now().strftime("%Y-%m-%d")
@@ -21,7 +23,7 @@ if __name__ == "__main__":
 
     data_manager_names = [
         "processed_raw",
-        "normalized_feature",
+        "norm_ft_for_cluster",
     ]
 
     data_managers = {}
@@ -30,14 +32,12 @@ if __name__ == "__main__":
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    # feature_list_str = ["peak_trough", "fourier", "volume", "price"]  # ノーマライズ時のエラーを回避済み
+    feature_list_str = ["price_movement", "volume"]
 
-    feature_list_str = ["peak_trough", "fourier", "volume", "price", "past"]
-
-    # FeaturePipeline のインスタンスを作成し、実行
-    FeatureCreationStage(
+    # ClusteringFeatureStage のインスタンスを作成し、実行
+    ClusteringFeatureStage(
         data_managers["processed_raw"],
-        data_managers["normalized_feature"],
+        data_managers["norm_ft_for_cluster"],
         before_period_days,
-        FeatureCreatorFactory.create_feature_creators(feature_list_str),
+        ClusteringFeatureCreatorFactory.create_feature_creators(feature_list_str),
     ).run(symbol)
