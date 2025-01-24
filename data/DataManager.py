@@ -28,7 +28,7 @@ class DataManager:
                 df.to_csv(path, index=True)
             else:
                 df.to_parquet(path, index=True)
-            print(f"データが {path} に保存されました")
+            # print(f"データが {path} に保存されました")
         except Exception as e:
             print(f"{path}のデータ保存に失敗しました: {e}")
 
@@ -65,7 +65,7 @@ class DataManager:
             else:
                 df = pd.read_parquet(path)
             df = df.loc[:, ~df.columns.str.contains("^Unnamed:")]
-            print(f"データが {path} からロードされました")
+            # print(f"データが {path} からロードされました")
             return df
         except Exception as e:
             print(f"{path}のデータロードに失敗しました: {e}")

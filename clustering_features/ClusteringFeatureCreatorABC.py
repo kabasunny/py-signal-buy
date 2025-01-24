@@ -10,14 +10,14 @@ class ClusteringFeatureCreatorABC(ABC):
 
     @abstractmethod
     def create_features(
-        self, df: pd.DataFrame, before_period_days: int
+        self, df: pd.DataFrame, feature_period_days: int
     ) -> pd.DataFrame:
         """
         特徴量を作成するための抽象メソッド。
 
         Args:
             df (pd.DataFrame): 入力データフレーム
-            before_period_days (int): 特徴量生成に必要な日数
+            feature_period_days (int): 特徴量生成に必要な日数
 
         Returns:
             pd.DataFrame: 特徴量が追加されたデータフレーム

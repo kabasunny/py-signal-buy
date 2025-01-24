@@ -11,7 +11,9 @@ if project_root not in sys.path:
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.JQuantsStockDataFetcher import JQuantsStockDataFetcher
 from data.DataManager import DataManager  # RawDataManager クラスのインポート
-from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage  # DataPipeline クラスのインポート
+from data.DataAcquisitionAndFormattingStage import (
+    DataAcquisitionAndFormattingStage,
+)  # DataPipeline クラスのインポート
 from datetime import datetime
 
 
@@ -22,8 +24,11 @@ if __name__ == "__main__":
     file_ext = "csv"  # "parquet"
     symbol = "1570"
 
-    data_manager = DataManager(current_date_str, base_data_path, "formated_raw", file_ext
+    data_manager = DataManager(
+        current_date_str, base_data_path, "formated_raw", file_ext
     )  # RawDataManager クラスのインスタンスを作成
 
     # DataPipeline クラスのインスタンスを作成し、データパイプラインを実行
-    DataAcquisitionAndFormattingStage(data_manager,YahooFinanceStockDataFetcher()).run(f"{symbol}")
+    DataAcquisitionAndFormattingStage(data_manager, YahooFinanceStockDataFetcher()).run(
+        symbol
+    )

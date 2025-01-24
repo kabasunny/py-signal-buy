@@ -17,7 +17,7 @@ if __name__ == "__main__":
     file_ext = "csv"  # "parquet"
 
     data_manager_names = [
-        "norm_ft_for_cluster",
+        "feature_for_cluster",
         "symbols_clusted_grp",
     ]
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     # ClusterGroupingStage のインスタンスを作成し、実行
     cluster_grouping_stage = ClusterGroupingStage(
-        data_managers["norm_ft_for_cluster"],
+        data_managers["feature_for_cluster"],
         data_managers["symbols_clusted_grp"],
         model_types,
         days,

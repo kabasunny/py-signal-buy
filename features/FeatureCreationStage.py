@@ -11,14 +11,14 @@ class FeatureCreationStage:
         self,
         processed_data_manager: DataManager,
         normalized_f_d_manager: DataManager,
-        before_period_days: int,
+        feature_period_days: int,
         analyzers: list,
     ):
         self.normalizer = Normalizer()  # Normalizerクラスのインスタンスを作成
         self.processed_data_manager = processed_data_manager
         self.normalized_f_d_manager = normalized_f_d_manager
         self.analyzers = analyzers
-        self.before_period_days = before_period_days
+        self.feature_period_days = feature_period_days
 
     @ArgsChecker((None, str), None)
     def run(self, symbol):
@@ -38,17 +38,17 @@ class FeatureCreationStage:
         # print(f"df3\n{df.head(1)}")
         # trade_start_day を計算
         first_date = pd.to_datetime(df["date"].iloc[0])
-        trade_start_date = first_date + pd.DateOffset(days=self.before_period_days)
+        ft_pred_start_date = first_date + pd.DateOffset(days=self.feature_period_days)
 
         # 特徴量を作成
         # dateカラムをTimestamp型に変換
         df["date"] = pd.to_datetime(df["date"])
 
         for analyzer in self.analyzers:
-            df = analyzer.create_features(df, trade_start_date)
+            df = analyzer.create_features(df, ft_pred_start_date)
 
         # trade_start_date 以降の日付のデータをフィルタリング
-        df_with_features = df[df["date"] >= trade_start_date].copy()
+        df_with_features = df[df["date"] >= ft_pred_start_date].copy()
         # print(f"df_with_features\n{df_with_features.head(1)}")
 
         # 指定された列を削除

@@ -13,12 +13,12 @@ class ClusterGroupingStage:
     @ArgsChecker((None, DataManager, DataManager, list, int), None)
     def __init__(
         self,
-        norm_ft_for_cluster: DataManager,
+        feature_for_cluster: DataManager,
         symbols_clusted_grp: DataManager,
         model_types: list,
         days: int,
     ):
-        self.norm_ft_for_cluster = norm_ft_for_cluster
+        self.feature_for_cluster = feature_for_cluster
         self.symbols_clusted_grp = symbols_clusted_grp
         self.model_types = model_types
         self.days = days
@@ -27,48 +27,31 @@ class ClusterGroupingStage:
         """
         クラスタリングを実行し、クラスタラベルを付与するメソッド。
         """
-        # 今日の日付と指定日数前の日付を計算
-        today = datetime.now()
-        start_date = today - timedelta(days=self.days)
 
-        # ディレクトリ内のすべてのCSVファイルを取得
-        files = self.norm_ft_for_cluster.list_files()
+        # ディレクトリ内のCSVファイルを取得（1つのみ想定）
+        files = self.feature_for_cluster.list_files()
+        if not files:
+            print("クラスタリング用のCSVファイルが存在しません")
+            return
 
-        all_data = []
+        file = files[0]
 
-        for file in files:
-            symbol = file
-            # 正規化されたデータをロード
-            df = self.norm_ft_for_cluster.load_data(symbol)
+        # 正規化されたデータをロード
+        df = self.feature_for_cluster.load_data(file)
 
-            # データフレームが空でないことを確認
-            if df.empty:
-                print(f"{symbol} をスキップします")
-                continue
+        # データフレームが空でないことを確認
+        if df.empty:
+            print(f"{file} にクラスタリング用特徴データがありません")
+            return
 
-            # 指定日数内のデータにフィルタリング
-            df["date"] = pd.to_datetime(df["date"])
-            df = df[(df["date"] >= start_date) & (df["date"] <= today)]
+        # シンボル列が既に存在するかを確認
+        if "symbol" not in df.columns:
+            # シンボル列を追加
+            df["symbol"] = file
 
-            # シンボル列が既に存在するかを確認
-            if "symbol" not in df.columns:
-                # シンボル列を追加
-                df["symbol"] = symbol
-
-            # データを統合
-            all_data.append(df)
-
-        # データフレームに変換
-        all_data_df = pd.concat(all_data)
-
-        # クラスタリング用の特徴量を選択
-        feature_columns = [
-            "daily_return",
-            "volatility",
-            "volume_change_rate",
-            "volume_moving_average",
-        ]
-        feature_data = all_data_df[feature_columns]
+        # クラスタリング用の特徴量を自動的に選択（symbol列以外のすべて）
+        feature_columns = df.columns.difference(["symbol", "date"]).tolist()
+        feature_data = df[feature_columns]
 
         for model_type in self.model_types:
             # モデルのインスタンスを生成
@@ -76,10 +59,10 @@ class ClusterGroupingStage:
 
             # クラスタリングを実行
             clusters = model.fit_predict(feature_data)
-            all_data_df["cluster"] = clusters
+            df["cluster"] = clusters
 
             # クラスタごとにシンボルリストを生成
-            cluster_symbols = all_data_df[["symbol", "cluster"]].drop_duplicates()
+            cluster_symbols = df[["symbol", "cluster"]].drop_duplicates()
             cluster_groups = (
                 cluster_symbols.groupby("cluster")["symbol"].apply(list).reset_index()
             )

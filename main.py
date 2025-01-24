@@ -18,22 +18,19 @@ import time  # 追加
 def main():
     current_date_str = datetime.now().strftime("%Y-%m-%d")
 
-    before_period_days = (
-        365 * 2
-    )  # 特徴量生成に必要なデータ期間# 現在の日付から2年前の日付を計算
     trained_date_ago = 365 * 2  # トレーニング終了日 (2年前) 翌日以降実践
     # training_date_ago = trained_date_ago + 365 * 10 # トレーニング開始日（10年間の期間）
+
+    # 以下はアプリケーション側の設定とする
     split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime(
         "%Y-%m-%d"
     )
-
+    feature_period_days = 365 * 2  # 特徴量生成に必要なデータ期間、現在月足の期間に依存
     model_saver_loader = ModelSaverLoader(
         current_date_str, model_save_path="models/trained_models", model_file_ext="pkl"
     )
 
     feature_list_str = [
-        # "peak_trough",
-        # "fourier",
         "volume",
         "price",
         "past",
@@ -73,12 +70,12 @@ def main():
     ]
 
     data_preparation = DataPreparationPipline(
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         data_managers,
     )
 
     feature_engineering = FeatureEngineeringPipline(
-        before_period_days,
+        feature_period_days,
         feature_list_str,
         data_managers,
         extractors,
@@ -86,7 +83,7 @@ def main():
     )
 
     training_pipeline = ModelTrainingPipeline(
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         split_date,  # トレーニング最終日、翌日以降実践日
         model_types,
         feature_list_str,
@@ -99,7 +96,7 @@ def main():
     proto_saver_loader = ProtoSaverLoader(proto_file_path)
 
     prediction_pipeline = ModelPredictionPipeline(
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         split_date,
         model_types,
         feature_list_str,

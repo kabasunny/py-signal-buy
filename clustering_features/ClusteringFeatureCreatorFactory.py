@@ -1,6 +1,8 @@
 # clustering _features\ClusteringFeatureCreatorFactory.py
 from .PriceClusteringFeatureCreator import PriceClusteringFeatureCreator
 from .VolumeClusteringFeatureCreator import VolumeClusteringFeatureCreator
+from .PeakTroughClusteringFeatureCreator import PeakTroughClusteringFeatureCreator
+from .FourierClusteringFeatureCreator import FourierClusteringFeatureCreator
 
 
 class ClusteringFeatureCreatorFactory:
@@ -13,6 +15,8 @@ class ClusteringFeatureCreatorFactory:
         creator_mapping = {
             "price_movement": PriceClusteringFeatureCreator,
             "volume": VolumeClusteringFeatureCreator,
+            "peak_trough": PeakTroughClusteringFeatureCreator,
+            "fourier": FourierClusteringFeatureCreator,
         }
         return [
             creator_mapping[feature]()

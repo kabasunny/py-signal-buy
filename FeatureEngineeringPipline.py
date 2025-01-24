@@ -10,13 +10,13 @@ import time
 class FeatureEngineeringPipline:
     def __init__(
         self,
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         feature_list_str,
         data_managers,
         extractors,
         selectors,  # 新しい引数を追加
     ):
-        self.before_period_days = before_period_days
+        self.feature_period_days = feature_period_days
         self.feature_list_str = feature_list_str
 
         self.data_managers = data_managers
@@ -27,7 +27,7 @@ class FeatureEngineeringPipline:
         self.feature_create_stage = FeatureCreationStage(
             self.data_managers["processed_raw"],
             self.data_managers["normalized_feature"],
-            self.before_period_days,
+            self.feature_period_days,
             FeatureCreatorFactory.create_feature_creators(self.feature_list_str),
         )
         self.extractor_stage = FeatureExtractionStage(
