@@ -27,14 +27,19 @@ if __name__ == "__main__":
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    model_types = ["kmeans", "dbscan"]  # 使用するモデルのリスト
-    days = 365  # 比較用の期間を指定（日数）
+    model_types = [
+        "kmeans",
+        "dbscan",
+        "hierarchical",
+        "mean_shift",
+        "gmm",
+        "spectral",
+    ]  # 使用するモデルのリスト
 
     # ClusterGroupingStage のインスタンスを作成し、実行
     cluster_grouping_stage = ClusterGroupingStage(
         data_managers["feature_for_cluster"],
         data_managers["symbols_clusted_grp"],
         model_types,
-        days,
     )
     cluster_grouping_stage.run()

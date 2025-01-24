@@ -1,5 +1,4 @@
 import pandas as pd
-from datetime import datetime, timedelta
 from data.DataManager import DataManager
 from clustering_models.ClusteringModelFactory import ClusteringModelFactory
 from decorators.ArgsChecker import ArgsChecker
@@ -16,12 +15,10 @@ class ClusterGroupingStage:
         feature_for_cluster: DataManager,
         symbols_clusted_grp: DataManager,
         model_types: list,
-        days: int,
     ):
         self.feature_for_cluster = feature_for_cluster
         self.symbols_clusted_grp = symbols_clusted_grp
         self.model_types = model_types
-        self.days = days
 
     def run(self):
         """
@@ -75,7 +72,7 @@ class ClusterGroupingStage:
 
                 # データを保存
                 self.symbols_clusted_grp.save_data(
-                    output_df, f"{model_type}_cluster_{cluster_label}"
+                    output_df, f"{model_type}/cluster_{cluster_label}"
                 )
 
         print(f"Clustering completed for all models: {self.model_types}")
