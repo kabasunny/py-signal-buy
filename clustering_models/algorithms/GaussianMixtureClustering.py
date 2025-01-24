@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.mixture import GaussianMixture
 from clustering_models.ClusteringBaseModelABC import ClusteringBaseModelABC
+from sklearn.impute import SimpleImputer
 
 
 class GaussianMixtureClustering(ClusteringBaseModelABC):
@@ -21,5 +22,10 @@ class GaussianMixtureClustering(ClusteringBaseModelABC):
         Returns:
             pd.Series: クラスタラベルを含むシリーズ
         """
-        clusters = self.gmm.fit_predict(df)
+        # NaN値を補完するためのイムプターを定義（平均値補完）
+        imputer = SimpleImputer(strategy='mean')
+        df_imputed = imputer.fit_transform(df)
+
+        # クラスタリングを実行
+        clusters = self.gmm.fit_predict(df_imputed)
         return pd.Series(clusters, index=df.index)

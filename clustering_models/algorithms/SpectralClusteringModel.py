@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.cluster import SpectralClustering
 from clustering_models.ClusteringBaseModelABC import ClusteringBaseModelABC
+from sklearn.impute import SimpleImputer
 
 
 class SpectralClusteringModel(ClusteringBaseModelABC):
@@ -23,5 +24,10 @@ class SpectralClusteringModel(ClusteringBaseModelABC):
         Returns:
             pd.Series: クラスタラベルを含むシリーズ
         """
-        clusters = self.spectral.fit_predict(df)
+        # NaN値を補完するためのイムプターを定義（平均値補完）
+        imputer = SimpleImputer(strategy='mean')
+        df_imputed = imputer.fit_transform(df)
+
+        # クラスタリングを実行
+        clusters = self.spectral.fit_predict(df_imputed)
         return pd.Series(clusters, index=df.index)

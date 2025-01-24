@@ -38,15 +38,22 @@ class ClusteringFeatureStage:
                 print(f"{symbol} をスキップします")
                 continue
 
+            df["date"] = pd.to_datetime(df["date"])  # 日付を変換する行を追加
+
             first_date = pd.to_datetime(df["date"].iloc[0])
             feature_start_date = first_date + pd.DateOffset(
                 days=self.feature_period_days
             )
-            df["date"] = pd.to_datetime(df["date"])
+            if (df["date"] < feature_start_date).sum() == 0:
+                print(f"{symbol} のデータが {feature_start_date} より前にありません。シンボルをスキップします")
+                continue
 
             feature_dfs = []
             for creator in self.feature_creators:
                 stats = creator.create_features(df, feature_start_date)
+                if stats.empty:
+                    print(f"{symbol} のデータが不十分なためスキップします")
+                    continue
                 feature_dfs.append(stats)
 
             if feature_dfs:

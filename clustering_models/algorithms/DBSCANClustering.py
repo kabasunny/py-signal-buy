@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.cluster import DBSCAN
 from clustering_models.ClusteringBaseModelABC import ClusteringBaseModelABC
+from sklearn.impute import SimpleImputer
 
 
 class DBSCANClustering(ClusteringBaseModelABC):
@@ -21,5 +22,10 @@ class DBSCANClustering(ClusteringBaseModelABC):
         Returns:
             pd.Series: クラスタラベルを含むシリーズ
         """
-        clusters = self.dbscan.fit_predict(df)
+        # NaN値を補完するためのイムプターを定義（平均値補完）
+        imputer = SimpleImputer(strategy='mean')
+        df_imputed = imputer.fit_transform(df)
+
+        # クラスタリングを実行
+        clusters = self.dbscan.fit_predict(df_imputed)
         return pd.Series(clusters, index=df.index)
