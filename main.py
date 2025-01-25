@@ -1,10 +1,15 @@
 from datetime import datetime, timedelta
+import time
 from models.ModelSaverLoader import ModelSaverLoader
 from data.DataManager import DataManager
 from result.ProtoSaverLoader import ProtoSaverLoader
-from symbols import symbols  # 別ファイルで定義
-from model_types import model_types  # 別ファイルで定義
+from model_types import (
+    model_types,
+    cluster_model_types,
+)  # 別ファイルで定義
+
 from DataPreparationPipline import DataPreparationPipline
+from ClusteringPipline import ClusteringPipline
 from FeatureEngineeringPipline import FeatureEngineeringPipline
 from ModelTrainingPipeline import (
     ModelTrainingPipeline,
@@ -12,7 +17,6 @@ from ModelTrainingPipeline import (
 from ModelPredictionPipeline import (
     ModelPredictionPipeline,
 )  # 実践シミュレーション用protofileを取り揃える
-import time  # 追加
 
 
 def main():
@@ -36,13 +40,39 @@ def main():
         "past",
     ]
 
+    cluster_ft_list_str = [
+        "price_movement",
+        "volume",
+        "peak_trough",
+        "fourier",
+    ]
+
+    extractors = ["PCA", "LDA", "ICA", "PCR"]
+
+    selectors = [
+        # "Tree",  # 決定木に基づく特徴量選択
+        # "Lasso",  # Lasso回帰による特徴量選択
+        # "Correlation",  # 相関に基づく特徴量選択
+        # "MutualInformation",  # 相互情報量に基づく特徴量選択
+        # "RFE",  # 再帰的特徴量削減
+        # "VarianceThreshold",  # 分散閾値に基づく特徴量選択
+        "SelectAll",  # 全特徴量を選択
+    ]
+
     base_data_path = "data/stock_data"
     file_ext = "csv"  # "parquet"
 
+    # ProtoSaverLoaderの初期化
+    proto_dir_path = "../go-optimal-stop/data/ml_stock_response"
+    proto_saver_loader = ProtoSaverLoader(proto_dir_path)
+
     data_manager_names = [
+        "all_symbols",
         "formated_raw",
         "processed_raw",
         "labeled",
+        "feature_for_cluster",
+        "symbols_clustered_grp",
         "normalized_feature",
         "extracted_feature",
         "selected_feature",
@@ -57,29 +87,24 @@ def main():
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    extractors = ["PCA", "LDA", "ICA", "PCR"]
-
-    selectors = [
-        # "Tree",  # 決定木に基づく特徴量選択
-        # "Lasso",  # Lasso回帰による特徴量選択
-        # "Correlation",  # 相関に基づく特徴量選択
-        # "MutualInformation",  # 相互情報量に基づく特徴量選択
-        # "RFE",  # 再帰的特徴量削減
-        # "VarianceThreshold",  # 分散閾値に基づく特徴量選択
-        "SelectAll",  # 全特徴量を選択
-    ]
-
     data_preparation = DataPreparationPipline(
         feature_period_days,  # 特徴量生成に必要な日数
+        data_managers,
+    )
+
+    clustering_pipline = ClusteringPipline(
+        feature_period_days,  # 特徴量生成に必要な日数
+        cluster_ft_list_str,
+        cluster_model_types,
         data_managers,
     )
 
     feature_engineering = FeatureEngineeringPipline(
         feature_period_days,
         feature_list_str,
-        data_managers,
         extractors,
         selectors,
+        data_managers,
     )
 
     training_pipeline = ModelTrainingPipeline(
@@ -91,37 +116,48 @@ def main():
         data_managers,
     )
 
-    # ProtoSaverLoaderの初期化
-    proto_file_path = "../go-optimal-stop/data/ml_stock_response/latest_response.bin"
-    proto_saver_loader = ProtoSaverLoader(proto_file_path)
-
     prediction_pipeline = ModelPredictionPipeline(
         feature_period_days,  # 特徴量生成に必要な日数
         split_date,
         model_types,
         feature_list_str,
         model_saver_loader,
-        data_managers,
         proto_saver_loader,
+        data_managers,
     )
 
-    # トレーニングと実データ用シンボルを取得
-    symbols_copy = symbols.copy()
-    # print(symbols)
-    # print(symbols_copy)
-
-    # 処理開始時間を記録
+    # 処理開始時間を記録 APIアクセスには1秒ラグを設けている
     start_time = time.time()
 
-    while symbols_copy:
-        symbol = symbols_copy.pop(0)
-        data_preparation.process_symbol(symbol)
-        feature_engineering.process_symbol(symbol)
-        training_pipeline.process_symbol(symbol)
-        prediction_pipeline.process_symbol(symbol)
+    # all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
+    
+    # for _, row in all_symbols.iterrows():
+    #     a_symbol = row["symbol"]
+    #     data_preparation.process_symbol(a_symbol)  # 並列処理 可
 
-    # シミュレーション用データ形式に変換
-    prediction_pipeline.finish_prosess(symbols)
+    # # 並列処理 不可
+    # clustering_pipline.process()
+
+    clustered_data_path = (
+        f"symbols_clustered_grp/{current_date_str}/{cluster_model_types[0]}"
+    )
+    print(f"clustered_data_path: {clustered_data_path}")
+    print(f"Available keys in data_managers: {list(data_managers.keys())}")
+
+    clustered_files = data_managers[clustered_data_path].list_files()
+
+    for c, clustered_file in enumerate(clustered_files, start=1):
+        clustered_symbols = data_managers[clustered_data_path].lod_data(clustered_file)
+        for _, row in clustered_symbols.iterrows():
+            one_symbol = clustered_symbols.pop(0)
+            feature_engineering.process_symbol(one_symbol)  # 並列処理 可
+            training_pipeline.process_symbol(one_symbol)  # 並列処理 不可
+            prediction_pipeline.process_symbol(one_symbol)  # 並列処理 可
+
+        # シミュレーション用データ形式に変換
+        prediction_pipeline.finish_prosess(
+            clustered_symbols, f"proto_{cluster_model_types[0]}-{c}.bin"
+        )  # 並列処理 不可
 
     # 処理終了時間を記録
     end_time = time.time()

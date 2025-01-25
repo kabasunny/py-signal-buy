@@ -13,34 +13,40 @@ from data.DataManager import DataManager
 from datetime import datetime
 from result.ResultSavingStage import ResultSavingStage
 from result.ProtoSaverLoader import ProtoSaverLoader
+
 # from symbols import symbols  # 別ファイルで定義
 from model_types import model_types  # 別ファイルで定義
 
 if __name__ == "__main__":
     current_date_str = datetime.now().strftime("%Y-%m-%d")
-    trained_date_ago = 365 * 2 # トレーニング終了日 (2年前) 翌日以降実践
+    trained_date_ago = 365 * 2  # トレーニング終了日 (2年前) 翌日以降実践
     base_data_path = "data/stock_data/demo"
     file_ext = "csv"  # "parquet"
 
     # 現在の日付から2年前の日付を計算
-    split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime("%Y-%m-%d")
+    split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime(
+        "%Y-%m-%d"
+    )
 
-     # データマネージャのインスタンスを作成
+    # データマネージャのインスタンスを作成
     data_manager_names = [
         "formated_raw",
         "predictions",
     ]
     data_managers = {}
     for d_m_name in data_manager_names:
-        data_managers[d_m_name] = DataManager(current_date_str, base_data_path, d_m_name, file_ext)
+        data_managers[d_m_name] = DataManager(
+            current_date_str, base_data_path, d_m_name, file_ext
+        )
 
-
-    file_path = "../go-optimal-stop/data/ml_stock_response/demo/latest_response.bin"
+    directory_path = "../go-optimal-stop/data/ml_stock_response/demo"
 
     # ProtoSaverLoaderの初期化
-    proto_saver_loader = ProtoSaverLoader(file_path)
+    proto_saver_loader = ProtoSaverLoader(directory_path)
 
-    symbols = ["1570",] # ここはリストで渡す
+    symbols = [
+        "1570",
+    ]  # ここはリストで渡す
 
     # ProtoConvertPipelineの初期化と実行
     ResultSavingStage(
@@ -49,13 +55,14 @@ if __name__ == "__main__":
         proto_saver_loader,
         model_types,
         split_date,
-        ).run(symbols) # リストを受けるため他のパイプラインと異なる
+    ).run(
+        symbols
+    )  # リストを受けるため他のパイプラインと異なる
     print("Proto conversion and saving completed.")
-
 
     # 保存したプロトコルバッファーの読み込み
     loaded_proto_response = proto_saver_loader.load_proto_response_from_file()
-    print_ml_stock_response_summary(loaded_proto_response)
+    print_ml_stock_response_summary(loaded_proto_response, "latest_response.bin")
 
 # MLStockResponse (summary):
 # Symbol: 1570

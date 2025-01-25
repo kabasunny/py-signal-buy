@@ -32,7 +32,7 @@ if __name__ == "__main__":
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    feature_list_str = [
+    cluster_ft_list_str = [
         "price_movement",
         "volume",
         "peak_trough",
@@ -44,5 +44,5 @@ if __name__ == "__main__":
         data_managers["processed_raw"],
         data_managers["feature_for_cluster"],
         feature_period_days,
-        ClusteringFeatureCreatorFactory.create_feature_creators(feature_list_str),
+        ClusteringFeatureCreatorFactory.create_feature_creators(cluster_ft_list_str),
     ).run()

@@ -2,6 +2,7 @@
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 from data.StockDataFetcherABC import StockDataFetcherABC  # 抽象クラスのインポート
 from data.DataManager import DataManager  # DataManager クラスのインポート
+import time
 
 
 class DataAcquisitionAndFormattingStage:
@@ -23,6 +24,9 @@ class DataAcquisitionAndFormattingStage:
             raw_data, symbol
         )  # データをフォーマット
         # print("Data standardization completed.")  # データ標準化完了のメッセージを表示
+
+        # 各API呼び出し後に1秒スリープ
+        time.sleep(1)
 
         if formated_data.empty:  # 標準化されたデータが空かどうかを確認
             print("No data found for the specified parameters")

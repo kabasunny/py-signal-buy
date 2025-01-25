@@ -1,7 +1,7 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreationStage import LabelCreateStage
+from labeling.LabelCreationStage import LabelCreationStage
 from labeling.TroughLabelCreator import TroughLabelCreator
 import time
 
@@ -9,15 +9,15 @@ import time
 class DataPreparationPipline:
     def __init__(
         self,
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         data_managers,
     ):
-        self.before_period_days = before_period_days
+        self.feature_period_days = feature_period_days
         self.model_created = False  # モデルが作成済みかどうかのフラグ
 
         self.data_managers = data_managers
 
-        # 各パイプラインをインスタンス変数として保持
+        # 各ステージをインスタンス変数として保持
         self.raw_data_stage = DataAcquisitionAndFormattingStage(
             self.data_managers["formated_raw"],
             fetcher=YahooFinanceStockDataFetcher(),
@@ -25,10 +25,10 @@ class DataPreparationPipline:
         self.preprocess_stage = DataPreprocessingStage(
             self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_stage = LabelCreateStage(
+        self.label_create_stage = LabelCreationStage(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
-            self.before_period_days,
+            self.feature_period_days,
             TroughLabelCreator(),
         )
 
@@ -39,7 +39,7 @@ class DataPreparationPipline:
             stages = [
                 ("DataAcquisitionAndFormattingStage", self.raw_data_stage),
                 ("DataPreprocessingStage", self.preprocess_stage),
-                ("LabelCreateStage", self.label_create_stage),
+                ("LabelCreationStage", self.label_create_stage),
             ]
 
             for stage_name, stage in stages:

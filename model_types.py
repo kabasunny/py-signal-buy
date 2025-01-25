@@ -21,3 +21,12 @@ model_types = [
     # "Perceptron",
     # "SGD",
 ]
+
+cluster_model_types = [
+    "kmeans",
+    # "dbscan",
+    # "hierarchical",
+    # "mean_shift",
+    # "gmm",
+    # "spectral",
+]

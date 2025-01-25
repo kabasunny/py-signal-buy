@@ -25,7 +25,9 @@ class ResultSavingStage:
         self.model_types = model_types
         self.split_date = split_date  # 文字列のまま保存
 
-    def run(self, symbols: List[str]):  # リストを受けるため他のパイプラインと異なる
+    def run(
+        self, symbols: List[str], file_name: str
+    ):  # リストを受けるため他のパイプラインと異なる
         responses = []
         # print(symbols)
         for symbol in symbols:
@@ -87,4 +89,6 @@ class ResultSavingStage:
         combined_response = MLStockResponse(symbol_data=responses)
 
         # 保存処理を実行
-        self.proto_saver_loader.save_proto_response_to_file(combined_response)
+        self.proto_saver_loader.save_proto_response_to_file(
+            combined_response, file_name
+        )

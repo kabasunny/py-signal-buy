@@ -27,7 +27,7 @@ if __name__ == "__main__":
             current_date_str, base_data_path, d_m_name, file_ext
         )
 
-    model_types = [
+    cluster_model_types = [
         "kmeans",
         "dbscan",
         "hierarchical",
@@ -40,6 +40,6 @@ if __name__ == "__main__":
     cluster_grouping_stage = ClusterGroupingStage(
         data_managers["feature_for_cluster"],
         data_managers["symbols_clusted_grp"],
-        model_types,
+        cluster_model_types,
     )
     cluster_grouping_stage.run()
