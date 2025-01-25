@@ -24,9 +24,9 @@ model_types = [
 
 cluster_model_types = [
     "kmeans",
-    "dbscan",
-    "hierarchical",
-    "mean_shift",
-    "gmm",
-    "spectral",
+    # "dbscan",
+    # "hierarchical",
+    # "mean_shift",
+    # "gmm",
+    # "spectral",
 ]

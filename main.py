@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 from models.ModelSaverLoader import ModelSaverLoader
 from data.DataManager import DataManager
 from result.ProtoSaverLoader import ProtoSaverLoader
@@ -16,7 +17,6 @@ from ModelTrainingPipeline import (
 from ModelPredictionPipeline import (
     ModelPredictionPipeline,
 )  # 実践シミュレーション用protofileを取り揃える
-import time
 
 
 def main():
@@ -129,27 +129,27 @@ def main():
     # 処理開始時間を記録 APIアクセスには1秒ラグを設けている
     start_time = time.time()
 
-    all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
+    # all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
+    
+    # for _, row in all_symbols.iterrows():
+    #     a_symbol = row["symbol"]
+    #     data_preparation.process_symbol(a_symbol)  # 並列処理 可
 
-    while all_symbols:
-        a_symbol = all_symbols.pop(0)
-        data_preparation.process_symbol(a_symbol)  # 並列処理 可
-
-    # 並列処理 不可
-    clustering_pipline.process()
+    # # 並列処理 不可
+    # clustering_pipline.process()
 
     clustered_data_path = (
         f"symbols_clustered_grp/{current_date_str}/{cluster_model_types[0]}"
     )
+    print(f"clustered_data_path: {clustered_data_path}")
+    print(f"Available keys in data_managers: {list(data_managers.keys())}")
 
     clustered_files = data_managers[clustered_data_path].list_files()
 
     for c, clustered_file in enumerate(clustered_files, start=1):
         clustered_symbols = data_managers[clustered_data_path].lod_data(clustered_file)
-
-        clustered_symbols_copy = clustered_symbols.copy()
-        while clustered_symbols_copy:
-            one_symbol = clustered_symbols_copy.pop(0)
+        for _, row in clustered_symbols.iterrows():
+            one_symbol = clustered_symbols.pop(0)
             feature_engineering.process_symbol(one_symbol)  # 並列処理 可
             training_pipeline.process_symbol(one_symbol)  # 並列処理 不可
             prediction_pipeline.process_symbol(one_symbol)  # 並列処理 可

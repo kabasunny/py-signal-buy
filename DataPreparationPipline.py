@@ -1,7 +1,7 @@
 from data.YahooFinanceStockDataFetcher import YahooFinanceStockDataFetcher
 from data.DataAcquisitionAndFormattingStage import DataAcquisitionAndFormattingStage
 from preprocessing.DataPreprocessingStage import DataPreprocessingStage
-from labeling.LabelCreationStage import LabelCreateStage
+from labeling.LabelCreationStage import LabelCreationStage
 from labeling.TroughLabelCreator import TroughLabelCreator
 import time
 
@@ -25,7 +25,7 @@ class DataPreparationPipline:
         self.preprocess_stage = DataPreprocessingStage(
             self.data_managers["formated_raw"], self.data_managers["processed_raw"]
         )
-        self.label_create_stage = LabelCreateStage(
+        self.label_create_stage = LabelCreationStage(
             self.data_managers["formated_raw"],
             self.data_managers["labeled"],
             self.feature_period_days,
@@ -39,7 +39,7 @@ class DataPreparationPipline:
             stages = [
                 ("DataAcquisitionAndFormattingStage", self.raw_data_stage),
                 ("DataPreprocessingStage", self.preprocess_stage),
-                ("LabelCreateStage", self.label_create_stage),
+                ("LabelCreationStage", self.label_create_stage),
             ]
 
             for stage_name, stage in stages:
