@@ -12,16 +12,15 @@ class FeatureEngineeringPipline:
         self,
         feature_period_days,  # 特徴量生成に必要な日数
         feature_list_str,
-        data_managers,
         extractors,
         selectors,  # 新しい引数を追加
+        data_managers,
     ):
         self.feature_period_days = feature_period_days
         self.feature_list_str = feature_list_str
-
-        self.data_managers = data_managers
         self.extractors = extractors
         self.selectors = selectors
+        self.data_managers = data_managers
 
         # 各パイプラインをインスタンス変数として保持
         self.feature_create_stage = FeatureCreationStage(

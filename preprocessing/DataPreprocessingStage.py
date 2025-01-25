@@ -24,8 +24,8 @@ class DataPreprocessingStage:
         # print("Raw data loaded successfully")
         # データフレームが空でないことを確認
         if df.empty:
-           print(f" {symbol} をスキップします")
-           return
+            print(f" {symbol} をスキップします")
+            return
 
         # データの前処理
         df = MissingValueHandler.fill_missing_with_mean(df)

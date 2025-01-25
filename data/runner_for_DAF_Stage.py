@@ -24,11 +24,20 @@ if __name__ == "__main__":
     file_ext = "csv"  # "parquet"
     symbol = "1570"
 
-    data_manager = DataManager(
-        current_date_str, base_data_path, "formated_raw", file_ext
-    )  # RawDataManager クラスのインスタンスを作成
+    data_manager_names = [
+        "all_symbols",
+        "formated_raw",
+    ]
+
+    data_managers = {}
+    for d_m_name in data_manager_names:
+        data_managers[d_m_name] = DataManager(
+            current_date_str, base_data_path, d_m_name, file_ext
+        )
 
     # DataPipeline クラスのインスタンスを作成し、データパイプラインを実行
-    DataAcquisitionAndFormattingStage(data_manager, YahooFinanceStockDataFetcher()).run(
-        symbol
-    )
+    DataAcquisitionAndFormattingStage(
+        data_managers["all_symbols"],
+        data_managers["formated_raw"],
+        YahooFinanceStockDataFetcher(),
+    ).run()

@@ -12,8 +12,8 @@ class ModelPredictionPipeline:
         model_types,
         feature_list_str,
         model_saver_loader,
-        data_managers,
         proto_saver_loader,
+        data_managers,
     ):
         self.before_period_days = before_period_days
         self.split_date = split_date
@@ -21,8 +21,8 @@ class ModelPredictionPipeline:
         self.feature_list_str = feature_list_str
         self.model_saver_loader = model_saver_loader
         self.model_created = False
-        self.data_managers = data_managers
         self.proto_saver_loader = proto_saver_loader
+        self.data_managers = data_managers
 
         # 各パイプラインをインスタンス変数として保持
         self.real_predict_stage = PredictionStage(
@@ -58,12 +58,12 @@ class ModelPredictionPipeline:
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
 
-    def finish_prosess(self, symbols):
+    def finish_prosess(self, symbols, file_name):
         start_time = time.time()
         # 平均評価を表示するメソッドの呼び出し
         self.real_predict_stage.print_avg_evaluations()
         self.proto_convert_stage.run(
-            symbols
+            symbols, file_name
         )  # リストを受けるため他のパイプラインと異なる
         elapsed_time = time.time() - start_time
         print(
