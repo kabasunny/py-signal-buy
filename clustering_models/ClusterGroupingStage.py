@@ -71,8 +71,7 @@ class ClusterGroupingStage:
                 output_df = pd.DataFrame({"symbol": symbols})
 
                 # データを保存
-                self.symbols_clusted_grp.save_data(
-                    output_df, f"{model_type}/cluster_{cluster_label}"
+                self.symbols_clusted_grp.save_data_to_subdir(
+                    output_df, f"{model_type}", f"cluster_label_{cluster_label}"
                 )
-
-        print(f"Clustering completed for all models: {self.model_types}")
+            print(f"Clustering completed for all models: {model_type}")
