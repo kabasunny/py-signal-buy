@@ -31,6 +31,9 @@ class ClusteringFeatureStage:
         """
         symbols = self.processed_data_manager.list_files()
         all_features = []
+        print(
+            f"I'm in the middle of hard work right now \nThis is because it creates the characteristics of so many symbols for clustering : {symbols}"
+        )
 
         for symbol in symbols:
             df = self.processed_data_manager.load_data(symbol)
@@ -45,7 +48,9 @@ class ClusteringFeatureStage:
                 days=self.feature_period_days
             )
             if (df["date"] < feature_start_date).sum() == 0:
-                print(f"{symbol} のデータが {feature_start_date} より前にありません。シンボルをスキップします")
+                print(
+                    f"{symbol} のデータが {feature_start_date} より前にありません。シンボルをスキップします"
+                )
                 continue
 
             feature_dfs = []

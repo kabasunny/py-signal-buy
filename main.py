@@ -130,7 +130,7 @@ def main():
     start_time = time.time()
 
     # all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
-    
+
     # for _, row in all_symbols.iterrows():
     #     a_symbol = row["symbol"]
     #     data_preparation.process_symbol(a_symbol)  # 並列処理 可
@@ -138,18 +138,16 @@ def main():
     # # 並列処理 不可
     # clustering_pipline.process()
 
-    clustered_data_path = (
-        f"symbols_clustered_grp/{current_date_str}/{cluster_model_types[0]}"
+    clustered_files = data_managers["symbols_clustered_grp"].list_files_from_subdir(
+        cluster_model_types[0]
     )
-    print(f"clustered_data_path: {clustered_data_path}")
-    print(f"Available keys in data_managers: {list(data_managers.keys())}")
-
-    clustered_files = data_managers[clustered_data_path].list_files()
 
     for c, clustered_file in enumerate(clustered_files, start=1):
-        clustered_symbols = data_managers[clustered_data_path].lod_data(clustered_file)
+        clustered_symbols = data_managers[
+            "symbols_clustered_grp"
+        ].load_data_from_subdir(cluster_model_types[0], clustered_file)
         for _, row in clustered_symbols.iterrows():
-            one_symbol = clustered_symbols.pop(0)
+            one_symbol = row["symbol"]
             feature_engineering.process_symbol(one_symbol)  # 並列処理 可
             training_pipeline.process_symbol(one_symbol)  # 並列処理 不可
             prediction_pipeline.process_symbol(one_symbol)  # 並列処理 可
