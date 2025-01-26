@@ -93,5 +93,5 @@ class ResultSavingStage:
         # 保存処理を実行
         self.proto_saver_loader.save_proto_response_to_file(
             combined_response, 
-            f"proto_{subdir.replace("/", "-")}.bin",
+            f'proto_{subdir.replace("/", "-")}.bin',
         )

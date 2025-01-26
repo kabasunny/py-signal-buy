@@ -129,14 +129,14 @@ def main():
     # 処理開始時間を記録 APIアクセスには1秒ラグを設けている
     start_time = time.time()
 
-    # all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
+    all_symbols = data_managers["all_symbols"].load_data("ticker_codes")
 
-    # for _, row in all_symbols.iterrows():
-    #     a_symbol = row["symbol"]
-    #     data_preparation.process_symbol(a_symbol)  # 並列処理 可
+    for _, row in all_symbols.iterrows():
+        a_symbol = row["symbol"]
+        data_preparation.process_symbol(a_symbol)  # 並列処理 可
 
     # 並列処理 不可
-    # clustering_pipline.process()
+    clustering_pipline.process()
 
     cluster_model_type = cluster_model_types[
         0
