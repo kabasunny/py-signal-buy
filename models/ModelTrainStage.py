@@ -28,40 +28,27 @@ class ModelTrainStage:
         self.y_test = None
 
     def run(self, symbol, subdir):
+        if not self.models_initialized or self.subdir != subdir:
+            self.models_initialized = False
+            self.subdir = subdir
+
         if not self.models_initialized:
-            # print("a")
             d = self.saver_loader.check_existing_models(self.model_types, subdir)
             if d:
-                # print("b")
-                confirm = (
-                    input(f"{d} 前回モデルを引き継ぎ、実行しますか? (Y/N): ")
-                    .strip()
-                    .upper()
-                )
-                if confirm == "Y":
-                    self.models = self.saver_loader.load_models(
-                        self.model_types, subdir
-                    )
-                    print("Loaded existing models for retraining")
-                else:
-                    print("新規でモデルを作成します")
-                    self.models = ModelFactory.create_models(self.model_types)
-                    print("Created new models for training")
+                self.models = self.saver_loader.load_models(self.model_types, subdir)
+                print("Loaded existing models for retraining")
             else:
                 print("新規でモデルを作成します")
                 self.models = ModelFactory.create_models(self.model_types)
                 print("Created new models for training")
 
-            self.models_initialized = True  # 初期化済みフラグを設定
+            self.models_initialized = True
 
         full_data = self.t_a_t_m.load_data(symbol)
-        # データフレームが空でないことを確認
         if full_data.empty:
             print(f" {symbol} をスキップします")
             return
 
-        # print(f"full_data{len(full_data)}")
-        # 正解と不正解の数を抽出
         correct_count = full_data[full_data["label"] == 1].shape[0]
         incorrect_count = full_data[full_data["label"] == 0].shape[0]
         ratio_tt = round(incorrect_count / correct_count, 1)
@@ -72,7 +59,6 @@ class ModelTrainStage:
             DataExtractor.extract_data(full_data)
         )
 
-        # トレーニング期間を表示
         start_date = pd.to_datetime(full_data["date"]).min().strftime("%Y-%m-%d")
         end_date = pd.to_datetime(full_data["date"]).max().strftime("%Y-%m-%d")
         years_difference = (
@@ -82,7 +68,6 @@ class ModelTrainStage:
             f"Training period: {start_date} to {end_date} （約{years_difference:.1f}年間修行）"
         )
 
-        # full_dataの最も古い日付と新しい日付から年単位でトレーニング期間を表示
         self.models, results_df = ModelTrainer.train(
             self.models, self.X_train, self.y_train, self.X_test, self.y_test
         )

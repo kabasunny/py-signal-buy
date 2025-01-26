@@ -154,13 +154,14 @@ def main():
             "symbols_clustered_grp"
         ].load_data_from_subdir(cluster_model_type, clustered_file_num)
         subdir = f"{cluster_model_type}/{clustered_file_num}"
+        # クラスタが切り替わるタイミングで、教師ありモデルのインスタンスを新しく切り替える必要がある
         for _, row in clustered_symbols.iterrows():
             one_symbol = row["symbol"]
-            #     feature_engineering.process_symbol(one_symbol)  # 並列処理 可
-            #     training_pipeline.process_symbol(
-            #         one_symbol,
-            #         subdir,
-            #     )  # 並列処理 不可
+            feature_engineering.process_symbol(one_symbol)  # 並列処理 可
+            training_pipeline.process_symbol(
+                one_symbol,
+                subdir,
+            )  # 並列処理 不可
             prediction_pipeline.process_symbol(
                 one_symbol,
                 subdir,

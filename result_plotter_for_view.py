@@ -4,12 +4,12 @@ import seaborn as sns
 from model_types import model_types  # 別ファイルで定義
 import os
 
-symbol = "1570"
-date = "2025-01-21"
+symbol = "1360"
+date = "2025-01-26"
 
 # データの読み込み
 stock_data_path = f"data/stock_data/formated_raw/{date}/{symbol}.csv"
-predictions_data_path = f"data/stock_data/predictions/{date}/{symbol}.csv"
+predictions_data_path = f"data/stock_data/predictions/kmeans/cluster_label_0/{date}/{symbol}.csv"
 labels_data_path = f"data/stock_data/labeled/{date}/{symbol}.csv"
 
 stock_data = pd.read_csv(stock_data_path)

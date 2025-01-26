@@ -127,10 +127,10 @@ class FeatureSelectionStage:
         )
 
         # print(f"final status")
-        # print(f"selected feature columns({len(selected_columns)})")
-        # print(f"Excluded feature columns({len(excluded_columns)})")
-        print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
-        print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
+        print(f"selected feature columns({len(selected_columns)})")
+        print(f"Excluded feature columns({len(excluded_columns)})")
+        # print(f"selected feature columns({len(selected_columns)}): {selected_columns}")
+        # print(f"Excluded feature columns({len(excluded_columns)}): {excluded_columns}")
 
         # 必要なカラムを追加
         df_selected["date"] = df_with_label["date"]
