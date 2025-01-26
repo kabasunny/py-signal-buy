@@ -26,11 +26,14 @@ class ResultSavingStage:
         self.split_date = split_date  # 文字列のまま保存
 
     def run(
-        self, symbols: List[str], subdir: str,
+        self,
+        symbols: List[str],
+        subdir: str,
     ):  # リストを受けるため他のパイプラインと異なる
         responses = []
         # print(symbols)
-        for symbol in symbols:
+        for _, row in symbols.iterrows():
+            symbol = row["symbol"]  # symbol 列の値を取得
             # raw_data_manager からデータを読み込む
             raw_data_df = self.raw_data_manager.load_data(symbol)
 
@@ -92,6 +95,6 @@ class ResultSavingStage:
 
         # 保存処理を実行
         self.proto_saver_loader.save_proto_response_to_file(
-            combined_response, 
+            combined_response,
             f'proto_{subdir.replace("/", "-")}.bin',
         )
