@@ -27,17 +27,21 @@ class ModelTrainStage:
         self.y_train = None
         self.y_test = None
 
-    def run(self, symbol):
+    def run(self, symbol, subdir):
         if not self.models_initialized:
-            d = self.saver_loader.check_existing_models(self.model_types)
+            # print("a")
+            d = self.saver_loader.check_existing_models(self.model_types, subdir)
             if d:
+                # print("b")
                 confirm = (
                     input(f"{d} 前回モデルを引き継ぎ、実行しますか? (Y/N): ")
                     .strip()
                     .upper()
                 )
                 if confirm == "Y":
-                    self.models = self.saver_loader.load_models(self.model_types)
+                    self.models = self.saver_loader.load_models(
+                        self.model_types, subdir
+                    )
                     print("Loaded existing models for retraining")
                 else:
                     print("新規でモデルを作成します")
@@ -84,6 +88,6 @@ class ModelTrainStage:
         )
 
         print(results_df)
-        self.saver_loader.save_models(self.models)
+        self.saver_loader.save_models(self.models, subdir)
 
         # print("Model Pipeline completed successfully")
