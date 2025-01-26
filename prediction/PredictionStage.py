@@ -4,6 +4,7 @@ from prediction.ModelPredictor import ModelPredictor
 from typing import List
 import pandas as pd
 
+
 class PredictionStage:
     def __init__(
         self,
@@ -14,15 +15,15 @@ class PredictionStage:
     ):
         self.model_saver_loader = model_saver_loader
         self.selected_feature_manager = selected_ft_w_l_manager
-        self.real_predictions_data_manager = bach_predictions_data_manager
+        self.bach_predictions_data_manager = bach_predictions_data_manager
         self.model_types = model_types
         self.models = None
         self.evaluations_sum = pd.DataFrame()  # 全評価の合計を保存
         self.evaluations_count = 0  # 評価の数をカウント
 
-    def run(self, symbol):
+    def run(self, symbol, subdir):
         # モデルの読み込み
-        self.models = self.model_saver_loader.load_models(self.model_types)
+        self.models = self.model_saver_loader.load_models(self.model_types, subdir)
 
         # 実践用データの読み込み
         practical_data = self.selected_feature_manager.load_data(symbol)
@@ -62,7 +63,9 @@ class PredictionStage:
         predictions_df["date"] = practical_data["date"]
         predictions_df["symbol"] = practical_data["symbol"]
         predictions_df["label"] = practical_data["label"]
-        self.real_predictions_data_manager.save_data(predictions_df, symbol)
+        self.bach_predictions_data_manager.save_data_to_subdir(
+            predictions_df, subdir, symbol
+        )
 
         # モデルの評価
         evaluations_df = ModelPredictor.evaluate(
@@ -73,8 +76,10 @@ class PredictionStage:
         if self.evaluations_sum.empty:
             self.evaluations_sum = evaluations_df
         else:
-            self.evaluations_sum = self.evaluations_sum.add(evaluations_df, fill_value=0)
-        
+            self.evaluations_sum = self.evaluations_sum.add(
+                evaluations_df, fill_value=0
+            )
+
         # 評価の数を増やす
         self.evaluations_count += 1
 

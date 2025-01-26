@@ -41,7 +41,7 @@ class ModelPredictionPipeline:
             self.split_date,
         )
 
-    def process_symbol(self, symbol):
+    def process_symbol(self, symbol, subdir):
         print(f"<< Now processing symbol {symbol} in {self.__class__.__name__} >>")
 
         try:
@@ -51,19 +51,20 @@ class ModelPredictionPipeline:
 
             for stage_name, stage in stages:
                 start_time = time.time()
-                stage.run(symbol)
+                stage.run(symbol, subdir)
                 elapsed_time = time.time() - start_time
                 print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
 
         except Exception as e:
             print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
 
-    def finish_prosess(self, symbols, file_name):
+    def finish_prosess(self, symbols, subdir):
         start_time = time.time()
         # 平均評価を表示するメソッドの呼び出し
         self.real_predict_stage.print_avg_evaluations()
         self.proto_convert_stage.run(
-            symbols, file_name
+            symbols,
+            subdir,
         )  # リストを受けるため他のパイプラインと異なる
         elapsed_time = time.time() - start_time
         print(

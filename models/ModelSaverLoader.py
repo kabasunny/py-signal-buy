@@ -9,26 +9,24 @@ class ModelSaverLoader:
         self.model_file_ext = model_file_ext
         self.date_str = date_str
 
-    def generate_path(self, model_name: str) -> str:
-        return (
-            f"{self.model_base_path}/{self.date_str}/{model_name}.{self.model_file_ext}"
-        )
+    def generate_path(self, subdir: str, model_name: str) -> str:
+        return f"{self.model_base_path}/{subdir}/{self.date_str}/{model_name}.{self.model_file_ext}"
 
-    def save_models(self, models: List[object]):
+    def save_models(self, models: List[object], subdir: str):
         for model in models:
             model_name = model.__class__.__name__.replace("Model", "")
-            filepath = self.generate_path(model_name)
+            filepath = self.generate_path(subdir, model_name)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "wb") as file:
                 pickle.dump(model, file)
             # print(f"モデルが {filepath} に保存されました")
 
-    def load_models(self, model_types: List[str]) -> List[object]:
+    def load_models(self, model_types: List[str], subdir: str) -> List[object]:
         models = []
-        dir_path = f"{self.model_base_path}/{self.date_str}/"
+        dir_path = f"{self.model_base_path}/{subdir}/{self.date_str}/"
         if not os.path.exists(dir_path):
             # 日付のインスタンス変数に合致するディレクトリがない場合、過去の日付を探索
-            parent_dir = f"{self.model_base_path}/"
+            parent_dir = f"{self.model_base_path}/{subdir}/"
             dir_list = sorted(os.listdir(parent_dir), reverse=True)
             for d in dir_list:
                 potential_path = os.path.join(parent_dir, d)
@@ -48,9 +46,15 @@ class ModelSaverLoader:
                 print(f"{model_type}のモデルファイルが存在しません。")
         return models
 
-    def check_existing_models(self, model_names: List[str]) -> str:
+    def check_existing_models(self, model_names: List[str], subdir: str) -> str:
         """保存済みモデルが存在するかチェック"""
-        parent_dir = f"{self.model_base_path}/"
+        parent_dir = f"{self.model_base_path}/{subdir}/"
+        if not os.path.exists(parent_dir):
+            # パスが存在しない場合にサブディレクトリを作成
+            os.makedirs(parent_dir, exist_ok=True)
+            print(f"モデル用ディレクトリ {parent_dir} を作成しました")
+            return None
+
         dir_list = sorted(os.listdir(parent_dir), reverse=True)
         for d in dir_list:
             potential_path = os.path.join(parent_dir, d)
@@ -59,4 +63,5 @@ class ModelSaverLoader:
                     filepath = f"{potential_path}/{model_name}.{self.model_file_ext}"
                     if os.path.exists(filepath):
                         return d
+
         return None

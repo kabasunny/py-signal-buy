@@ -35,20 +35,18 @@ class ModelTrainingPipeline:
             self.model_types,
         )
 
-    def process_symbol(self, symbol):
+    def process_symbol(self, symbol, subdir):
         print(f"<< Now processing symbol {symbol} in {self.__class__.__name__} >>")
-
         try:
-            stages = [
-                ("DataForModelStage", self.data_for_model_stage),
-                ("ModelTrainStage", self.model_stage),
-            ]
+            start_time = time.time()
+            self.data_for_model_stage.run(symbol)
+            elapsed_time = time.time() - start_time
+            print(f"処理時間: {elapsed_time:.4f} 秒, DataForModelStage ")
 
-            for stage_name, stage in stages:
-                start_time = time.time()
-                stage.run(symbol)
-                elapsed_time = time.time() - start_time
-                print(f"処理時間: {elapsed_time:.4f} 秒, {stage_name} ")
+            start_time = time.time()
+            self.model_stage.run(symbol, subdir)
+            elapsed_time = time.time() - start_time
+            print(f"処理時間: {elapsed_time:.4f} 秒, ModelTrainStage ")
 
         except Exception as e:
-            print(f"{symbol} の {stage_name} 処理中にエラーが発生しました: {e}")
+            print(f"{symbol} の処理中にエラーが発生しました: {e}")
