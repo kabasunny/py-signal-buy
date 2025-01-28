@@ -4,8 +4,8 @@ import os  # ディレクトリパスを扱うためにosモジュールをイ�
 
 
 class ProtoSaverLoader:
-    def __init__(self, directory_path):
-        self.directory_path = directory_path
+    def __init__(self, ):
+        self.directory_path = "result/ml_stock_response"
 
     def save_proto_response_to_file(self, proto_response, file_name):
         # ディレクトリが存在しない場合は作成
