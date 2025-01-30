@@ -7,7 +7,7 @@ from result.print_ml_stock_response import print_ml_stock_response_summary
 class ModelPredictionPipeline:
     def __init__(
         self,
-        before_period_days,  # 特徴量生成に必要な日数
+        feature_period_days,  # 特徴量生成に必要な日数
         split_date,
         model_types,
         feature_list_str,
@@ -15,7 +15,7 @@ class ModelPredictionPipeline:
         proto_saver_loader,
         data_managers,
     ):
-        self.before_period_days = before_period_days
+        self.feature_period_days = feature_period_days
         self.split_date = split_date
         self.model_types = model_types
         self.feature_list_str = feature_list_str

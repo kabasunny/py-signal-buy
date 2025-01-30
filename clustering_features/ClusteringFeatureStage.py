@@ -32,7 +32,7 @@ class ClusteringFeatureStage:
         symbols = self.processed_data_manager.list_files()
         all_features = []
         print(
-            f"I'm in the middle of hard work right now \nThis is because it creates the characteristics of so many symbols for clustering : {symbols}"
+            f"I'm in the middle of hard work right now \nThis is because it creates the features for clustering many symbols, such as : {symbols}"
         )
 
         for symbol in symbols:
