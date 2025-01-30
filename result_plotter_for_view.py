@@ -72,7 +72,7 @@ for model in model_types:
         )
 
         # プロットの装飾
-        plt.title(f"{model} Predictions on Stock Price")
+        plt.title(f"{model} Predictions on Stock Price of {symbol}")
         plt.xlabel("Date")
         plt.ylabel("Stock Price")
         plt.legend()
