@@ -135,43 +135,45 @@ def main():
     #     a_symbol = row["symbol"]
     #     data_preparation.process_symbol(a_symbol)  # 並列処理 可
 
-    # 並列処理 不可
+    # # 並列処理 不可
     # clustering_pipline.process()
 
-    cluster_model_type = cluster_model_types[
-        0
-    ]  # 教師なし学習モデルを複数選択するかは検討
+    for cluster_model_type in cluster_model_types: # 現状一つだけ
 
-    clustered_files = data_managers["symbols_clustered_grp"].list_files_from_subdir(
-        cluster_model_type
-    )
-
-    for i, clustered_file_num in enumerate(clustered_files, start=1):
-        print(
-            f"<< Now processing clustered_file_num {clustered_file_num} ,  {i} / {len(clustered_files)} >>"
+        # モデルがクラスタリングしたグループの文字列リストを取得
+        clustered_files = data_managers["symbols_clustered_grp"].list_files_from_subdir(
+            cluster_model_type
         )
-        clustered_symbols = data_managers[
-            "symbols_clustered_grp"
-        ].load_data_from_subdir(cluster_model_type, clustered_file_num)
-        subdir = f"{cluster_model_type}/{clustered_file_num}"
-        # クラスタが切り替わるタイミングで、教師ありモデルのインスタンスを新しく切り替える必要がある
-        # for _, row in clustered_symbols.iterrows():
-        #     one_symbol = row["symbol"]
-            # feature_engineering.process_symbol(one_symbol)  # 並列処理 可
-            # training_pipeline.process_symbol(
-            #     one_symbol,
-            #     subdir,
-            # )  # 並列処理 不可
-            # prediction_pipeline.process_symbol(
-            #     one_symbol,
-            #     subdir,
-            # )  # 並列処理 可
 
-        # シミュレーション用データ形式に変換
-        prediction_pipeline.finish_prosess(
-            clustered_symbols,
-            subdir,
-        )  # 並列処理 不可
+        for i, clustered_file_num in enumerate(clustered_files, start=1):
+            print(
+                f"<< Now processing clustered_file_num {clustered_file_num} ,  {i} / {len(clustered_files)} >>"
+            )
+            clustered_symbols = data_managers[
+                "symbols_clustered_grp"
+            ].load_data_from_subdir(cluster_model_type, clustered_file_num)
+            print(clustered_symbols)
+
+
+            subdir = f"{cluster_model_type}/{clustered_file_num}"
+            # # クラスタが切り替わるタイミングで、教師ありモデルのインスタンスを新しく切り替える必要がある
+            # for _, row in clustered_symbols.iterrows():
+            #     one_symbol = row["symbol"]
+            #     feature_engineering.process_symbol(one_symbol)  # 並列処理 可
+            #     training_pipeline.process_symbol(
+            #         one_symbol,
+            #         subdir,
+            #     )  # 並列処理 不可
+            #     prediction_pipeline.process_symbol(
+            #         one_symbol,
+            #         subdir,
+            #     )  # 並列処理 可
+
+            # シミュレーション用データ形式に変換
+            prediction_pipeline.finish_prosess(
+                clustered_symbols,
+                subdir,
+            )  # 並列処理 不可
 
     # 処理終了時間を記録
     end_time = time.time()

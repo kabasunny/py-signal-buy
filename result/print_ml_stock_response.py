@@ -4,7 +4,7 @@ def print_ml_stock_response_summary(ml_stock_response, num_items=5):
 
     for i, symbol_data_item in enumerate(symbol_data):
         if i < num_items or i >= len(symbol_data) - num_items:
-            print(f"Symbol: {symbol_data_item.symbol}")
+            print(f"Symbol: {symbol_data_item.symbol}, Priority: {symbol_data_item.priority}")
             print("  Daily Data:")
             for daily_data_item in symbol_data_item.daily_data[:2]:  # 最初の2項目を表示
                 print(
@@ -12,9 +12,7 @@ def print_ml_stock_response_summary(ml_stock_response, num_items=5):
                 )
             if len(symbol_data_item.daily_data) > num_items * 2:
                 print("    ...")
-            for daily_data_item in symbol_data_item.daily_data[
-                -2:
-            ]:  # 最後の2項目を表示
+            for daily_data_item in symbol_data_item.daily_data[-2:]:  # 最後の2項目を表示
                 print(
                     f"    Date: {daily_data_item.date}, Open: {daily_data_item.open}, Close: {daily_data_item.close}"
                 )

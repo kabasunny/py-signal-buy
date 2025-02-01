@@ -8,6 +8,7 @@ import pandas as pd
 from typing import List
 from data.DataManager import DataManager
 from result.ProtoSaverLoader import ProtoSaverLoader
+from result.print_ml_stock_response import print_ml_stock_response_summary
 
 
 class ResultSavingStage:
@@ -27,11 +28,11 @@ class ResultSavingStage:
 
     def run(
         self,
-        symbols: List[str],
+        symbols: pd.DataFrame,
         subdir: str,
     ):
         responses = []
-        for _, row in symbols.iterrows():
+        for index, row in symbols.iterrows():
             symbol = row["symbol"]  # symbol 列の値を取得
             raw_data_df = self.raw_data_manager.load_data(symbol)
 
@@ -84,6 +85,7 @@ class ResultSavingStage:
                 daily_data=daily_data_list,
                 signals=[str(signal) for signal in signal_dates],
                 model_predictions=model_predictions,
+                priority=index,  # 優先順位をインデックスに基づいて設定
             )
 
             responses.append(symbol_data)  # MLSymbolData を直接追加
@@ -94,3 +96,9 @@ class ResultSavingStage:
             combined_response,
             f'proto_{subdir.replace("/", "-")}.bin',
         )
+
+        
+        # 保存したプロトコルバッファーの読み込み
+        loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file(f'proto_{subdir.replace("/", "-")}.bin',
+)
+        print_ml_stock_response_summary(loaded_proto_response)

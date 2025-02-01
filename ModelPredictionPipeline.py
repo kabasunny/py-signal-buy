@@ -1,7 +1,6 @@
 from result.ResultSavingStage import ResultSavingStage
 from prediction.PredictionStage import PredictionStage
 import time
-from result.print_ml_stock_response import print_ml_stock_response_summary
 
 
 class ModelPredictionPipeline:
@@ -71,6 +70,3 @@ class ModelPredictionPipeline:
             f"処理時間: {elapsed_time:.4f} 秒, Proto file processing for {len(symbols)} symbols"
         )
 
-        # 保存したプロトコルバッファーの読み込み
-        # loaded_proto_response = self.proto_saver_loader.load_proto_response_from_file()
-        # print_ml_stock_response_summary(loaded_proto_response)
