@@ -9,7 +9,6 @@ from typing import List
 from data.DataManager import DataManager
 from result.ProtoSaverLoader import ProtoSaverLoader
 
-
 class ResultSavingStage:
     def __init__(
         self,
@@ -27,11 +26,13 @@ class ResultSavingStage:
 
     def run(
         self,
-        symbols: List[str],
+        symbols: pd.DataFrame,
         subdir: str,
     ):
         responses = []
-        for _, row in symbols.iterrows():
+        atr_period = 30  # 余裕を持って30個分のデータを使用
+
+        for index, row in symbols.iterrows():
             symbol = row["symbol"]  # symbol 列の値を取得
             raw_data_df = self.raw_data_manager.load_data(symbol)
 
@@ -39,9 +40,22 @@ class ResultSavingStage:
                 print(f" {symbol} をスキップします")
                 continue
 
-            raw_data_df = raw_data_df[raw_data_df["date"] > self.split_date]
+            # データの取得期間の確認
+            # print(f"{symbol} のデータ期間: {raw_data_df['date'].min()} から {raw_data_df['date'].max()}")
 
-            daily_data_list = [
+            # ATR計算のために、split_date前の最新の30個分のデータを取得
+            data_for_atr = raw_data_df[raw_data_df['date'] <= self.split_date].iloc[-atr_period:]
+
+            if data_for_atr.shape[0] < atr_period:
+                print(f"データが不足しています: {symbol} - {data_for_atr.shape[0]} 日分しかありません")
+                continue
+
+            # デバッグ情報の追加
+            # print(f"split_date: {self.split_date}")
+            # print(f"{symbol} のデータ: {data_for_atr}")
+
+            # ATR計算用のデータ
+            daily_data_list_for_atr = [
                 MLDailyData(
                     date=str(row["date"]),
                     open=float(row["open"]),
@@ -50,8 +64,29 @@ class ResultSavingStage:
                     close=float(row["close"]),
                     volume=int(row["volume"]),
                 )
-                for _, row in raw_data_df.iterrows()
+                for _, row in data_for_atr.iterrows()
             ]
+
+            # split_date以降のデータも含める
+            data_after_split_date = raw_data_df[raw_data_df['date'] > self.split_date]
+            daily_data_list_after_split_date = [
+                MLDailyData(
+                    date=str(row["date"]),
+                    open=float(row["open"]),
+                    high=float(row["high"]),
+                    low=float(row["low"]),
+                    close=float(row["close"]),
+                    volume=int(row["volume"]),
+                )
+                for _, row in data_after_split_date.iterrows()
+            ]
+
+            # デバッグ情報の追加
+            # print(f"{symbol} に格納されたデータの最初: {daily_data_list_for_atr[:5]}")  # 初期のデータ5件を表示
+            # print(f"{symbol} に格納されたデータの最後: {daily_data_list_after_split_date[-5:]}")  # 最後のデータ5件を表示
+
+            # 全てのデータを連結
+            daily_data_list = daily_data_list_for_atr + daily_data_list_after_split_date
 
             predictions_df = self.bach_pred_data_manager.load_data_from_subdir(
                 subdir, symbol
@@ -62,19 +97,16 @@ class ResultSavingStage:
                 continue
 
             predictions_df = predictions_df[predictions_df["date"] > self.split_date]
-
             signal_dates = predictions_df[predictions_df["label"] == 1]["date"].tolist()
 
-            # モデルのマップに正解ラベルのパターンを追加した
+            # モデルのマップに正解ラベルのパターンを追加
             model_predictions = {
                 "correct_label": ModelPredictions(prediction_dates=signal_dates)
             }
 
             # モデルの結果のマップ
             for model in self.model_types:
-                prediction_dates = predictions_df[predictions_df[model] == 1][
-                    "date"
-                ].tolist()
+                prediction_dates = predictions_df[predictions_df[model] == 1]["date"].tolist()
                 model_predictions[model] = ModelPredictions(
                     prediction_dates=[str(date) for date in prediction_dates]
                 )
@@ -84,6 +116,8 @@ class ResultSavingStage:
                 daily_data=daily_data_list,
                 signals=[str(signal) for signal in signal_dates],
                 model_predictions=model_predictions,
+                priority=index,  # 優先順位をインデックスに基づいて設定
+                split_date=self.split_date,  # split_date を追加
             )
 
             responses.append(symbol_data)  # MLSymbolData を直接追加
