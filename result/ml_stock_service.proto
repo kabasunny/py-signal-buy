@@ -24,7 +24,7 @@ message MLStockResponse {
 message MLSymbolData {
   string symbol = 1;  // シンボル名
   repeated MLDailyData daily_data = 2;  // 日足データリスト　ATR計算データを30個含む
-  repeated string signals = 3;  // 予測結果の日付リスト
+  repeated string signals = 3;  // 予測結果の日付リスト 現状は使用していない　Go側でprediction_datesを入れ替えている
   map<string, ModelPredictions> model_predictions = 4;  // 各モデルの予測結果
   int64 priority = 5;  // 優先順位
   string split_date = 6;  // 訓練終了日、翌日以降が予測対象日
