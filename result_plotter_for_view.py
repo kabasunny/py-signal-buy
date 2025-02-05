@@ -4,8 +4,8 @@ import seaborn as sns
 from model_types import model_types  # 別ファイルで定義
 import os
 
-symbol = "7014"
-date = "2025-01-27"
+symbol = "1357"
+date = "2025-02-03"
 
 # データの読み込み
 stock_data_path = f"data/stock_data/formated_raw/{date}/{symbol}.csv"

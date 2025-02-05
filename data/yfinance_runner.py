@@ -4,7 +4,7 @@ import pandas as pd
 def fetch_data(symbol) -> pd.DataFrame:
     symbol = symbol + ".T"
     # 全期間のデータを取得
-    data = yf.Ticker(symbol).history(period="max")
+    data = yf.Ticker(symbol).history(period="max", auto_adjust=True)
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = data.columns.droplevel(1)
     return data
@@ -24,10 +24,10 @@ def fetch_additional_info(symbol):
     return financials, balance_sheet, cashflow, recommendations
 
 def main():
-    symbol = "7203"  # トヨタ自動車のシンボル
+    symbol = "7203"  
     data = fetch_data(symbol)
-    print("株価データ:")
-    print(data)
+    print("株価データ (最後の40行):")
+    print(data.tail(40))
 
     financials, balance_sheet, cashflow, recommendations = fetch_additional_info(symbol)
     print("\nファンダメンタルデータ:")

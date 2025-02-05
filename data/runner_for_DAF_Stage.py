@@ -22,7 +22,7 @@ if __name__ == "__main__":
     before_period_days = 365 * 2  # 特徴量生成に必要なデータ期間
     base_data_path = "data/stock_data/demo"
     file_ext = "csv"  # "parquet"
-    symbol = "1570"
+    symbol = "1357"
 
     data_manager_names = [
         "all_symbols",
@@ -37,7 +37,6 @@ if __name__ == "__main__":
 
     # DataPipeline クラスのインスタンスを作成し、データパイプラインを実行
     DataAcquisitionAndFormattingStage(
-        data_managers["all_symbols"],
         data_managers["formated_raw"],
         YahooFinanceStockDataFetcher(),
-    ).run()
+    ).run(symbol)
