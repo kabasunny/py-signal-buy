@@ -1,10 +1,9 @@
 import lightgbm as lgb
 import pandas as pd
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 from models.BaseModelABC import BaseModelABC
 from models.Evaluator import Evaluator
 from decorators.ArgsChecker import ArgsChecker
-
 
 class LightGBMModel(BaseModelABC):
     def __init__(self):
@@ -30,10 +29,7 @@ class LightGBMModel(BaseModelABC):
         y_train: pd.Series,
         X_test: pd.DataFrame,
         y_test: pd.Series,
-    ) -> Tuple["BaseModelABC", Tuple[float, float, float, float]]:
-        # print(
-        #     f"開始前トレーニング済み回数{self.train_count} : カウンターLightGBM君(代表)"
-        # )
+    ) -> Tuple["BaseModelABC", Dict[str, Any]]:
         lgb_train = lgb.Dataset(X_train, y_train)
         lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
         self.model = lgb.train(
@@ -61,5 +57,6 @@ class LightGBMModel(BaseModelABC):
 
     def evaluate(
         self, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Tuple[float, float, float, float]:
-        return Evaluator.evaluate_model(self, X_test, y_test)
+    ) -> Dict[str, Any]:
+        result = Evaluator.evaluate_model(self.model, X_test, y_test)
+        return result

@@ -29,7 +29,7 @@ def main():
     split_date = (datetime.now() - timedelta(days=trained_date_ago)).strftime(
         "%Y-%m-%d"
     )
-    print(f"トレーニング終了日(split_date):{split_date}")
+    print(f"設定:トレーニング終了日(split_date):{split_date}")
     feature_period_days = 365 * 2  # 特徴量生成に必要なデータ期間、現在月足の期間に依存
     model_saver_loader = ModelSaverLoader(
         current_date_str, model_save_path="models/trained_models", model_file_ext="pkl"

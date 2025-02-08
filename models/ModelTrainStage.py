@@ -8,7 +8,6 @@ from decorators.ArgsChecker import ArgsChecker
 import pandas as pd
 from datetime import datetime
 
-
 class ModelTrainStage:
     @ArgsChecker((None, DataManager, ModelSaverLoader, List[str]), None)
     def __init__(
@@ -35,8 +34,14 @@ class ModelTrainStage:
         if not self.models_initialized:
             d = self.saver_loader.check_existing_models(self.model_types, subdir)
             if d:
-                self.models = self.saver_loader.load_models(self.model_types, subdir)
-                print("Loaded existing models for retraining")
+                user_input = input("モデルが既に存在します。上書きしますか？ (Y/N): ")
+                if user_input.lower() == 'y':
+                    print("新規でモデルを作成します")
+                    self.models = ModelFactory.create_models(self.model_types)
+                    print("Created new models for training")
+                else:
+                    self.models = self.saver_loader.load_models(self.model_types, subdir)
+                    print("Loaded existing models for retraining")
             else:
                 print("新規でモデルを作成します")
                 self.models = ModelFactory.create_models(self.model_types)
@@ -46,7 +51,7 @@ class ModelTrainStage:
 
         full_data = self.t_a_t_m.load_data(symbol)
         if full_data.empty:
-            print(f" {symbol} をスキップします")
+            print(f"{symbol} をスキップします")
             return
 
         correct_count = full_data[full_data["label"] == 1].shape[0]

@@ -116,3 +116,5 @@ models/trained_models/
 catboost_info/
 
 get_top_ranking_symbols.py
+
+ml_stock_response/

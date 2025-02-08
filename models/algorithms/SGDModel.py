@@ -1,6 +1,6 @@
 from sklearn.linear_model import SGDClassifier
 import pandas as pd
-from typing import Any, Tuple
+from typing import Any, Tuple, Dict
 from models.BaseModelABC import BaseModelABC
 from models.Evaluator import Evaluator
 from decorators.ArgsChecker import ArgsChecker
@@ -24,8 +24,9 @@ class SGDModel(BaseModelABC):
     def predict(self, X_test: pd.DataFrame) -> pd.Series:
         predictions = self.model.predict(X_test)
         return pd.Series(predictions)
-
+    
     def evaluate(
         self, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Tuple[float, float, float, float]:
-        return Evaluator.evaluate_model(self, X_test, y_test)
+    ) -> Dict[str, Any]:
+        result = Evaluator.evaluate_model(self.model, X_test, y_test)
+        return result

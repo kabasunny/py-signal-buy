@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 from models.BaseModelABC import BaseModelABC
 from models.Evaluator import Evaluator
 from decorators.ArgsChecker import ArgsChecker
@@ -24,7 +24,7 @@ class VotingModel(BaseModelABC):
         y_train: pd.Series,
         X_test: pd.DataFrame,
         y_test: pd.Series,
-    ) -> Tuple["BaseModelABC", Tuple[float, float, float, float]]:
+    ) -> Tuple["BaseModelABC", Dict[str, Any]]:
         # データのスケーリング
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
@@ -46,5 +46,6 @@ class VotingModel(BaseModelABC):
 
     def evaluate(
         self, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Tuple[float, float, float, float]:
-        return Evaluator.evaluate_model(self, X_test, y_test)
+    ) -> Dict[str, Any]:
+        result = Evaluator.evaluate_model(self.model, X_test, y_test)
+        return result

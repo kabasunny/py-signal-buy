@@ -1,7 +1,7 @@
 from sklearn.ensemble import BaggingClassifier
 from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
-from typing import Any, Tuple
+from typing import Any, Dict, Tuple
 from models.BaseModelABC import BaseModelABC
 from models.Evaluator import Evaluator
 from decorators.ArgsChecker import ArgsChecker
@@ -16,7 +16,7 @@ class BaggingModel(BaseModelABC):
         y_train: pd.Series,
         X_test: pd.DataFrame,
         y_test: pd.Series,
-    ) -> Tuple["BaseModelABC", Tuple[float, float, float, float]]:
+    ) -> Tuple["BaseModelABC", Dict[str, Any]]:
         self.model.fit(X_train, y_train)
         result = self.evaluate(X_test, y_test)
         return self, result
@@ -28,5 +28,6 @@ class BaggingModel(BaseModelABC):
 
     def evaluate(
         self, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Tuple[float, float, float, float]:
-        return Evaluator.evaluate_model(self, X_test, y_test)
+    ) -> Dict[str, Any]:
+        result = Evaluator.evaluate_model(self.model, X_test, y_test)
+        return result
