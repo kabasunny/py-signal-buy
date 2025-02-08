@@ -9,6 +9,7 @@ from typing import List
 from data.DataManager import DataManager
 from result.ProtoSaverLoader import ProtoSaverLoader
 
+
 class ResultSavingStage:
     def __init__(
         self,
@@ -44,10 +45,14 @@ class ResultSavingStage:
             # print(f"{symbol} のデータ期間: {raw_data_df['date'].min()} から {raw_data_df['date'].max()}")
 
             # ATR計算のために、split_date前の最新の30個分のデータを取得
-            data_for_atr = raw_data_df[raw_data_df['date'] <= self.split_date].iloc[-atr_period:]
+            data_for_atr = raw_data_df[raw_data_df["date"] <= self.split_date].iloc[
+                -atr_period:
+            ]
 
             if data_for_atr.shape[0] < atr_period:
-                print(f"データが不足しています: {symbol} - {data_for_atr.shape[0]} 日分しかありません")
+                print(
+                    f"データが不足しています: {symbol} - {data_for_atr.shape[0]} 日分しかありません"
+                )
                 continue
 
             # デバッグ情報の追加
@@ -68,7 +73,7 @@ class ResultSavingStage:
             ]
 
             # split_date以降のデータも含める
-            data_after_split_date = raw_data_df[raw_data_df['date'] > self.split_date]
+            data_after_split_date = raw_data_df[raw_data_df["date"] > self.split_date]
             daily_data_list_after_split_date = [
                 MLDailyData(
                     date=str(row["date"]),
@@ -80,10 +85,6 @@ class ResultSavingStage:
                 )
                 for _, row in data_after_split_date.iterrows()
             ]
-
-            # デバッグ情報の追加
-            # print(f"{symbol} に格納されたデータの最初: {daily_data_list_for_atr[:5]}")  # 初期のデータ5件を表示
-            # print(f"{symbol} に格納されたデータの最後: {daily_data_list_after_split_date[-5:]}")  # 最後のデータ5件を表示
 
             # 全てのデータを連結
             daily_data_list = daily_data_list_for_atr + daily_data_list_after_split_date
@@ -105,11 +106,22 @@ class ResultSavingStage:
             }
 
             # モデルの結果のマップ
+            ensemble_dates = set()
             for model in self.model_types:
-                prediction_dates = predictions_df[predictions_df[model] == 1]["date"].tolist()
+                prediction_dates = predictions_df[predictions_df[model] == 1][
+                    "date"
+                ].tolist()
                 model_predictions[model] = ModelPredictions(
                     prediction_dates=[str(date) for date in prediction_dates]
                 )
+                ensemble_dates.update(prediction_dates)
+
+            # 重複を避けるため、日付を一つだけにする
+            ensemble_dates = sorted(list(ensemble_dates))
+
+            model_predictions["ensemble_label"] = ModelPredictions(
+                prediction_dates=[str(date) for date in ensemble_dates]
+            )
 
             symbol_data = MLSymbolData(
                 symbol=symbol,

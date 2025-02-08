@@ -6,6 +6,7 @@ from labeling.utils.PeakBasedTroughSelector import PeakBasedTroughSelector
 from labeling.LabelCreatorABC import LabelCreatorABC
 from decorators.ArgsChecker import ArgsChecker  # デコレータクラスをインポート
 
+
 class TroughLabelCreator(LabelCreatorABC):
     def __init__(
         self,
@@ -60,7 +61,8 @@ class TroughLabelCreator(LabelCreatorABC):
             df.loc[df["date"] == trough_date, "label"] = 1
 
             # 正解ラベルの日付の前日および翌日もラベルとして設定
-            for offset in range(-2, 3):  # 二日前から二日後まで
+            # for offset in range(-2, 3):  # 二日前から二日後まで?
+            for offset in range(-1, 2):  # 一日前から一日後まで
                 if offset != 0:
                     adjusted_date = trough_date + pd.Timedelta(days=offset)
                     df.loc[df["date"] == adjusted_date, "label"] = 1
